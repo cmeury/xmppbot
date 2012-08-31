@@ -1,0 +1,5 @@
+{
+  "schedules" : {
+    "1" : "schedule -timestamp 20120827T224028.338+0200 -daily 22:38 -muc 14010_bdev-test@conf.hipchat.com -cmd echo hello!"
+  }
+}

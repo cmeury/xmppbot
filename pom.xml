@@ -1,0 +1,104 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.raion.xmppbot</groupId>
+	<artifactId>xmppbot-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>0.6.0-SNAPSHOT</version>
+	<name>Parent Project for the XmppBot</name>
+	<url>http://raion.de/xmppbot</url>
+	<inceptionYear>2012</inceptionYear>
+	<licenses>
+		<license>
+			<name>Apache License 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	<organization>
+		<url>http://raion.de</url>
+		<name>Bernd Kiefer</name>
+	</organization>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<cli-api-version>1.0</cli-api-version>
+		<jcommander-version>1.29</jcommander-version>
+	
+		<logback-version>1.0.3</logback-version>
+		<slf4j-version>1.6.4</slf4j-version>
+		<smack-version>3.2.1</smack-version>
+		<jackson-version>2.0.2</jackson-version>
+		<junit-version>4.10</junit-version>
+		<mockito-version>1.9.0</mockito-version>
+		<joda-time-version>2.1</joda-time-version>
+	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.2</version>
+				<configuration>
+					<licenseName>apache_v2</licenseName>
+					<canUpdateDescription>true</canUpdateDescription>
+					<canUpdateCopyright>true</canUpdateCopyright>
+					<organizationName>${project.organization.name}</organizationName>
+					<clearAfterOperation>true</clearAfterOperation>
+					<verbose>true</verbose>
+				</configuration>
+				<executions>
+					<execution>
+						<id>update-file-header</id>
+						<goals>
+							<goal>update-file-header</goal>
+						</goals>
+						<phase>process-sources</phase>
+					</execution>
+
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											license-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.2,)
+										</versionRange>
+										<goals>
+											<goal>
+												update-file-header
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	
+
+</project>

@@ -1,0 +1,5 @@
+ScheduleCommand -l -list
+
+	- show the execution daily at xx:xx or weekdays at 22:33
+	
+
