@@ -6,11 +6,11 @@
       "host" : "chat.hipchat.com",
       "port" : 5222,
       "serviceName" : null,
-      "jabberId" : "14010_120621@chat.hipchat.com",
-      "password" : "iamabot",
+      "jabberId" : "insertidhere@chat.hipchat.com",
+      "password" : "yourpassword",
       "nickName" : "Enbot Botson",
       "multiUserChats" : {
-        "bdev-test" : "14010_bdev-test@conf.hipchat.com"
+        "multiuserchatname" : "dailygossip@conf.hipchat.com"
       },
       "chats" : {
       }
