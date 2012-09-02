@@ -1,0 +1,8 @@
+Package: enbot-botson
+Version: 4-LATEST
+Section: sindbad
+Priority: hi
+Architecture: all
+Depends: jdk (>= 1.5)
+Description: Enbot - simple XMPP Bot based on Java, providing commands
+Maintainer: bernd.kiefer@raion.de

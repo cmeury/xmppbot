@@ -1,0 +1,133 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>de.raion.xmppbot</groupId>
+		<artifactId>xmppbot-parent</artifactId>
+		<version>0.6.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>xmppbot</artifactId>
+	<packaging>pom</packaging>
+
+	<name>XmppBot Install</name>
+	<description>assembly instructions and configuration for packaging</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- plugin versions -->
+		<maven-assembly-plugin-version>2.3</maven-assembly-plugin-version>
+		<jdeb-version>0.11</jdeb-version>
+
+		<!-- debian packaging properties -->
+		<deb.pkgname>enbot-botson</deb.pkgname>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>xmppbot-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>xmppbot-commands</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>${maven-assembly-plugin-version}</version>
+				<configuration>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptors>
+						<descriptor>src/main/assembly/assembly.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.vafer</groupId>
+				<artifactId>jdeb</artifactId>
+				<version>${jdeb-version}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jdeb</goal>
+						</goals>
+						<configuration>
+							<deb>${project.build.directory}/${deb.pkgname}_${project.version}-${build.number}_amd64.deb</deb>
+							<controlDir>${basedir}/src/main/debian/config</controlDir>
+							<installDir>/usr/local/lib/enbot/</installDir>
+							<dataSet>
+								<data>
+									<src>src/main/debian/bin</src>
+									<type>directory</type>
+									<includes>*.sh</includes>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/local/lib/enbot/bin</prefix>
+										<filemode>755</filemode>
+										<user>enbot</user>
+										<group>enbot</group>
+									</mapper>
+								</data>
+								<data>
+									<src>src/main/debian/etc</src>
+									<type>directory</type>
+									<includes>*.conf</includes>
+									<mapper>
+										<type>perm</type>
+										<prefix>/etc/enbot</prefix>
+										<filemode>660</filemode>
+										<user>enbot</user>
+										<group>enbot</group>
+									</mapper>
+								</data>
+								<data>
+									<src>src/main/debian/upstart</src>
+									<type>directory</type>
+									<includes>*.conf</includes>
+									<mapper>
+										<type>perm</type>
+										<prefix>/etc/init</prefix>
+										<filemode>644</filemode>
+										<user>root</user>
+										<group>root</group>
+									</mapper>
+								</data>
+								<data>
+									<src>${project.build.directory}/${project.artifactId}-${project.version}</src>
+									<type>directory</type>
+									<includes>*.jar</includes>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/local/lib/enbot/libs</prefix>
+										<filemode>755</filemode>
+										<user>enbot</user>
+										<group>enbot</group>
+									</mapper>
+								</data>
+								</dataSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+
+</project>
