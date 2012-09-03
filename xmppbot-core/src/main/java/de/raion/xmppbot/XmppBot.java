@@ -273,6 +273,9 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 					connection.addPacketInterceptor(interceptor, interceptor.getPacketFilter());
 				}
 
+				
+				TestPacketListener tpl = new TestPacketListener(this);
+				connection.addPacketListener(tpl, tpl.getAcceptFilter());
 
 				DiscussionHistory history = new DiscussionHistory();
 				history.setMaxStanzas(0);

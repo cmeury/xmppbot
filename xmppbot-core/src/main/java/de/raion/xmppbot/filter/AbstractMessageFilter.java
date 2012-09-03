@@ -20,7 +20,9 @@ package de.raion.xmppbot.filter;
  */
 
 
+import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
 
 import de.raion.xmppbot.context.XmppContext;
 
@@ -29,11 +31,27 @@ import de.raion.xmppbot.context.XmppContext;
  * to the XmppContext
  *
  */
-public abstract class AbstractMessageFilter implements MessageFilter {
+public abstract class AbstractMessageFilter implements MessageFilter, PacketFilter {
 
 	private XmppContext context;
 	
 	
+	/**
+	 * initializes the filter without context
+	 * @see #setContext(XmppContext)
+	 */
+	public AbstractMessageFilter() {};
+	
+	/**
+	 * @param aContext the available context
+	 */
+	public AbstractMessageFilter(XmppContext aContext) {
+		context = aContext;
+	}
+	
+	/**
+	 * @return the context, can be null
+	 */
 	public XmppContext getContext() {
 		return context;
 	}
@@ -43,7 +61,19 @@ public abstract class AbstractMessageFilter implements MessageFilter {
 		this.context = context;
 	}
 
+	/**
+	 * Default implementation of {@link PacketFilter#accept(Packet)}, if the 
+	 * packet is an instance of Message then {@link #accept(Message)} is called.
+	 * @param packet the Packet to check
+	 * @return	true if packet is a Message and {@link #accept(Message)} returns true,
+	 * 			otherwise false
+	 */
+	public boolean accept(Packet packet) {
+		if (packet instanceof Message) 
+			return accept((Message)packet);
+		return false;
+	}
 
-	public abstract boolean accept(Message packet);
+	public abstract boolean accept(Message message);
 
 }
