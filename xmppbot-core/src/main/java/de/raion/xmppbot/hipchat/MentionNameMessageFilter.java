@@ -23,9 +23,13 @@ package de.raion.xmppbot.hipchat;
 import de.raion.xmppbot.annotation.MessageFilter;
 import de.raion.xmppbot.filter.MessageBodyContainsFilter;
 
+/**
+ *
+ *
+ */
 @MessageFilter(service ="hipchat", forClass=HipChatMultiUserChatListener.class)
 public class MentionNameMessageFilter extends MessageBodyContainsFilter {
 
-	
+
 
 }

@@ -33,18 +33,22 @@ public class MessageBodyContainsFilter extends AbstractMessageFilter {
 	private String containing;
 	private boolean ignoreCase;
 
-	
-	
+
+
+	/**
+	 * Constructor with containing = null and ignoreCase = false
+	 * @see #getContaining()
+	 * @see #isIgnoreCase()
+	 */
 	public MessageBodyContainsFilter() {
 		containing = null;
 		ignoreCase = false;
-		
+
 	}
-	
+
 	/**
-	 * @param token
-	 *            reference token the message body has to contain for acceptance
-	 * @param ignoreCase
+	 * @param token reference token the message body has to contain for acceptance
+	 * @param ignoreCase shall ignore Cases
 	 */
 	public MessageBodyContainsFilter(String token, boolean ignoreCase) {
 
@@ -60,12 +64,14 @@ public class MessageBodyContainsFilter extends AbstractMessageFilter {
 
 
 
+	@Override
 	public boolean accept(Message aMessage) {
 
 		log.debug(aMessage.toXML());
-		
-		if(containing == null)
-			return true;
+
+		if(containing == null) {
+			return false;
+		}
 
 		String body = aMessage.getBody();
 
@@ -89,12 +95,11 @@ public class MessageBodyContainsFilter extends AbstractMessageFilter {
 	}
 
 	/**
-	 * containing getter method.
-	 *
-	 * @return the containing
+	 * sets the phrase which should be contained in the message body
+	 * @param phrase the phrase which should be contained in the message body
 	 */
-	public void setContaining(String containing) {
-		this.containing = containing;
+	public void setContaining(String phrase) {
+		this.containing = phrase;
 	}
 
 	/**

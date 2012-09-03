@@ -20,9 +20,15 @@ package de.raion.xmppbot.annotation;
  */
 
 
+/**
+ *
+ *
+ */
 public @interface MessageFilter {
 
+	@SuppressWarnings("javadoc")
 	String service();
-	
+
+	@SuppressWarnings("javadoc")
 	Class<?> forClass();
 }

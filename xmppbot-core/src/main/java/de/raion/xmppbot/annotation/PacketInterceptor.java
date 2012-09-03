@@ -24,6 +24,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import de.raion.xmppbot.AbstractPacketInterceptor;
+
 /**
  * Defines that the Class is implementing an PacketInterceptor for a specific Service.
  * If a SubClass of AbstractPacketInterceptor is annotated with @PacketInterceptor
@@ -32,11 +34,12 @@ import java.lang.annotation.Target;
  * @see Service
  * @see AbstractPacketInterceptor
  * @see PacketInterceptor
- * 
+ *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface PacketInterceptor {
 
+	@SuppressWarnings("javadoc")
 	String service();
 }
