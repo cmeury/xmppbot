@@ -9,9 +9,9 @@ package de.raion.xmppbot;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package de.raion.xmppbot;
  */
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,9 +64,19 @@ import de.raion.xmppbot.config.BotConfiguration;
 import de.raion.xmppbot.config.XmppConfiguration;
 import de.raion.xmppbot.context.XmppContext;
 import de.raion.xmppbot.hipchat.HipChatMultiUserChatListener;
+import de.raion.xmppbot.plugin.AbstractMessageListenerPlugin;
+import de.raion.xmppbot.plugin.MessageListenerPlugin;
 
 /**
- *a simple xmppbot
+ *<h2>Enbot Botson</h2>
+ *
+ *a simple xmppbot providing a framework for commands and plugins.<br>
+ *
+ *@see AbstractXmppCommand for commands
+ *@see CLICommand marker annotation for commands
+ *@see AbstractMessageListenerPlugin for plugins
+ *@see MessageListenerPlugin marker annotation for plugins
+ *
  *
  */
 @SuppressWarnings("rawtypes")
@@ -73,8 +84,6 @@ import de.raion.xmppbot.hipchat.HipChatMultiUserChatListener;
 public class XmppBot extends CommandLineApplication implements ChatManagerListener, PacketListener {
 
 	private static Logger log = LoggerFactory.getLogger(XmppBot.class);
-
-
 
 	private Map<String, XMPPConnection> connectionMap;
 	private Map<String, MultiUserChat> multiUserChatMap;
@@ -85,6 +94,8 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 	private Map<String, Class<MultiUserChatListener>> multiUserChatListenerMap;
 
 	private BotConfiguration configuration;
+
+	private Map<String,AbstractMessageListenerPlugin> pluginMap;
 
 	/**
 	 * constructor
@@ -97,8 +108,10 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 		chatMap = new HashMap<String, Chat>();
 		multiUserChatPresenceMap = new HashMap<MultiUserChat, Set<String>>();
 		messageHandler = new ChatMessageListener(this);
+
 		packetInterceptorMap = loadPacketInterceptors();
 		multiUserChatListenerMap = loadMultiUserChatListener();
+		pluginMap = loadPlugins();
 	}
 
 
@@ -109,13 +122,16 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 	@SuppressWarnings("unchecked")
 	public void init(BotConfiguration aConfig)  {
 		try {
+
+			configuration = aConfig;
+
 			super._commands = loadCommands();
 
-			this.configuration = aConfig;
+
 
 			Map<String, ConnectionConfiguration> conConfigMap = prepareConnectionConfiguration(aConfig.getConfigurations());
 
-			this.connectionMap = initConnections(aConfig, conConfigMap);
+			connectionMap = initConnections(aConfig, conConfigMap);
 
 			this.registerChatListener(this, connectionMap);
 			getContext().init();
@@ -125,14 +141,59 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 		}
 	}
 
+
+
+	private Map<String, AbstractMessageListenerPlugin> loadPlugins () throws CLIInitException {
+		Discoverer discoverer = new ClasspathDiscoverer();
+		CLIAnnotationDiscovereryListener discoveryListener = new CLIAnnotationDiscovereryListener(
+				new String[] { MessageListenerPlugin.class.getName() });
+		discoverer.addAnnotationListener(discoveryListener);
+		discoverer.discover();
+
+		return loadPlugins(discoveryListener.getDiscoveredClasses());
+	}
+
+	private Map<String,AbstractMessageListenerPlugin> loadPlugins(List<String> pluginClasses) throws CLIInitException {
+
+		Map<String, AbstractMessageListenerPlugin> aPluginMap = new HashMap<String, AbstractMessageListenerPlugin>();
+
+		for(String pluginClassName: pluginClasses) {
+
+			try {
+				@SuppressWarnings("unchecked")
+				Class<AbstractMessageListenerPlugin> pluginClass = (Class<AbstractMessageListenerPlugin>) Class
+						.forName(pluginClassName);
+
+				if (AbstractMessageListenerPlugin.class.isAssignableFrom(pluginClass)) {
+					MessageListenerPlugin pluginAnnotation = pluginClass.getAnnotation(MessageListenerPlugin.class);
+
+					Constructor<AbstractMessageListenerPlugin> constructor = pluginClass.getConstructor(XmppBot.class);
+
+					AbstractMessageListenerPlugin plugin = constructor.newInstance(this);
+
+					aPluginMap.put(pluginAnnotation.name().toLowerCase(), plugin);
+					log.debug("Loaded plugin [" + pluginAnnotation.name() + "].");
+				}
+
+			} catch (ClassNotFoundException e) {
+				throw new CLIInitException("Unable to find command class [" + pluginClassName
+						+ "].");
+			} catch (Exception e) {
+				throw new CLIInitException("Unable to load command class [" + pluginClassName
+						+ "]: " + e.getMessage());
+			}
+		}
+		return aPluginMap;
+	}
+
+
 	/**
 	 * Load the necessary commands for this application.
 	 *
 	 * @return The map of commands.
 	 * @throws CLIInitException
-	 *             Thrown when commands fail to properly load.
 	 */
-	private Map<String, Class<AbstractXmppCommand>> loadCommands() throws CLIInitException {
+	private Map<String, Class<AbstractXmppCommand>> loadCommands() throws CLIInitException  {
 
 		Discoverer discoverer = new ClasspathDiscoverer();
 		CLIAnnotationDiscovereryListener discoveryListener = new CLIAnnotationDiscovereryListener(
@@ -141,7 +202,6 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 		discoverer.discover();
 
 		return loadCommands(discoveryListener.getDiscoveredClasses());
-
 	}
 
 	private Map<String, Class<AbstractXmppCommand>> loadCommands(List<String> commandClasses)
@@ -239,6 +299,8 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 				connection.login(jabberId, pwd);
 				log.info("logged in with name '{}'", jabberId);
 
+				connection = addPlugins(connection);
+
 				joinMultiUserChats(xmppConfig, connection);
 				joinChats(xmppConfig, connection);
 
@@ -249,6 +311,18 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 			}
 		}
 		return aConnectionMap;
+	}
+
+
+	private XMPPConnection addPlugins(XMPPConnection connection) {
+
+		Collection<AbstractMessageListenerPlugin> plugins = pluginMap.values();
+
+		for(AbstractMessageListenerPlugin plugin : plugins){
+			connection.addPacketListener(plugin, plugin.getAcceptFilter());
+		}
+
+		return connection;
 	}
 
 
@@ -273,9 +347,9 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 					connection.addPacketInterceptor(interceptor, interceptor.getPacketFilter());
 				}
 
-				
-				TestPacketListener tpl = new TestPacketListener(this);
-				connection.addPacketListener(tpl, tpl.getAcceptFilter());
+
+				//HttpInfoPlugin tpl = new HttpInfoPlugin(this);
+				//connection.addPacketListener(tpl, tpl.getAcceptFilter());
 
 				DiscussionHistory history = new DiscussionHistory();
 				history.setMaxStanzas(0);
@@ -476,6 +550,29 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 
 	}
 
+	public boolean hasCommand(String command) {
+		return getCommandNames().contains(command);
+
+	}
+
+
+	public Chat getChat(String participant) {
+		return chatMap.get(participant);
+	}
+
+
+	public BotConfiguration getConfiguration() {
+		return configuration;
+
+	}
+
+
+	/**
+	 * starting the xmppbot
+	 * @param args arguments, arg[0] should link to the named configfile, otherwise
+	 * 		  Enbot will lookup for <code>xmppbot.json</code> in the workingdirectory
+	 * @throws Exception if an not expected Exception occure
+	 */
 	public static void main(String[] args) throws Exception {
 
 		XmppBot bot = new XmppBot();
@@ -500,20 +597,6 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 
 		bot.init(config);
 		TimeUnit.HOURS.sleep(1);
-
-	}
-
-	public boolean hasCommand(String command) {
-		return getCommandNames().contains(command);
-
-	}
-
-	public Chat getChat(String participant) {
-		return chatMap.get(participant);
-	}
-
-	public BotConfiguration getConfiguration() {
-		return configuration;
 
 	}
 }

@@ -1,4 +1,4 @@
-package de.raion.xmppbot;
+package de.raion.xmppbot.plugin;
 /*
  * #%L
  * XmppBot Core
@@ -8,9 +8,9 @@ package de.raion.xmppbot;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,17 +32,24 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.raion.xmppbot.XmppBot;
 import de.raion.xmppbot.context.XmppContext;
 import de.raion.xmppbot.io.MultiUserChatWriter;
 
-public abstract class AbstractPacketListener implements PacketListener {
+/**
+ * base class for MessageListenerPlugins. the class provides to correct
+ * context for the subclasses.
+ */
+public abstract class AbstractMessageListenerPlugin implements PacketListener {
 	// static variables
 	/** default logger */
-	@SuppressWarnings("unused")
-	private static Logger log = LoggerFactory.getLogger(AbstractPacketListener.class);
+	private static Logger log = LoggerFactory.getLogger(AbstractMessageListenerPlugin.class);
 	private XmppBot xmppBot;
 
-	public AbstractPacketListener(XmppBot aXmppBot) {
+	/**
+	 * @param aXmppBot reference to the bot
+	 */
+	public AbstractMessageListenerPlugin(XmppBot aXmppBot) {
 		this.xmppBot = aXmppBot;
 	}
 
@@ -58,6 +65,7 @@ public abstract class AbstractPacketListener implements PacketListener {
 
 			Runnable runnable = new Runnable() {
 
+				@SuppressWarnings("synthetic-access")
 				public void run() {
 
 					Thread.currentThread().setName("Message: " + message.getBody());
@@ -88,12 +96,21 @@ public abstract class AbstractPacketListener implements PacketListener {
 		}
 	}
 
+
+	/**
+	 * @return context the plugin is running with
+	 */
+	public XmppContext getContext() { return xmppBot.getContext(); }
+
+	/**
+	 * @return the filter which defines what messages the listener consumes
+	 */
 	public abstract PacketFilter getAcceptFilter();
 
 	/**
 	 * processes a message
 	 *
-	 * @param xmppContext
+	 * @param xmppContext context the listener is running
 	 * @param chat
 	 *            the chat the message came from
 	 * @param message
@@ -104,7 +121,7 @@ public abstract class AbstractPacketListener implements PacketListener {
 	/**
 	 * processes a message
 	 *
-	 * @param xmppContext
+	 * @param xmppContext context the listener is running
 	 * @param muc
 	 *            multiuserchat the message came from
 	 * @param message
