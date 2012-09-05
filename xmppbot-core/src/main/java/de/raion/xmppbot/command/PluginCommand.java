@@ -20,6 +20,7 @@ package de.raion.xmppbot.command;
  */
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import net.dharwin.common.tools.cli.api.CommandResult;
@@ -31,6 +32,8 @@ import org.slf4j.LoggerFactory;
 import com.beust.jcommander.Parameter;
 
 import de.raion.xmppbot.XmppContext;
+import de.raion.xmppbot.plugin.AbstractMessageListenerPlugin;
+import de.raion.xmppbot.plugin.MessageListenerPlugin;
 
 /**
  *
@@ -43,8 +46,11 @@ public class PluginCommand extends AbstractXmppCommand {
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(PluginCommand.class);
 
-	@Parameter(names = { "-l", "-list" }, description = "shows all available commands")
+	@Parameter(names = { "-l", "-list" }, description = "shows all available plugins")
 	boolean showList = false;
+	
+	@Parameter(names = { "-s", "-status" }, description = "shows the status of the plugins (enabled/disabled)")
+	boolean showStatus = false;
 
 	@Override
 	protected CommandResult innerExecute(XmppContext context) {
@@ -52,12 +58,24 @@ public class PluginCommand extends AbstractXmppCommand {
 		if(showList) {
 			printPluginList(context);
 		}
+		if(showStatus)
+			printStatusList(context);
 
 		return CommandResult.OK;
 
 	}
 
 	private void printPluginList(XmppContext context) {
+
+		Set<Entry<String, AbstractMessageListenerPlugin>> entrySet = context.getPluginManager().getPlugins().entrySet();
+		
+		for (Entry<String, AbstractMessageListenerPlugin> entry : entrySet) {
+			MessageListenerPlugin annotation = entry.getValue().getClass().getAnnotation(MessageListenerPlugin.class);
+			println(annotation.name()+" - "+annotation.description());
+		}
+	}
+
+	private void printStatusList(XmppContext context) {
 
 		Map<String, Boolean> statusMap = context.getPluginManager().getStatusMap();
 		Set<String> keySet = statusMap.keySet();

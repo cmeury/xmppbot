@@ -90,6 +90,8 @@ public class HttpInfoPlugin extends AbstractMessageListenerPlugin {
 
 		Matcher matcher = pattern.matcher(message.getBody());
 
+		StringBuilder builder = new StringBuilder();
+		
 		while(matcher.find()) {
 			String url = matcher.group();
 
@@ -97,18 +99,23 @@ public class HttpInfoPlugin extends AbstractMessageListenerPlugin {
 
 				Document doc = Jsoup.connect(url).get();
 				String title = doc.select("title").first().text();
+				
+				builder = new StringBuilder(title);
 
-
+				
 				String meta  = doc.select("meta[name=description]").attr("content");
 				//String meta = e.attr("content");
 
-				StringBuilder builder = new StringBuilder(title).append(" - ").append(meta);
+				if(meta != null)
+				builder.append(" - ").append(meta);
 
-				xmppContext.println(builder.toString());
+			
 
 
 			} catch (IOException e) {
 				log.error("processMessage(XmppContext, Message) - {}", e.getMessage());
+			} finally {
+				xmppContext.println(builder.toString());
 			}
 
 

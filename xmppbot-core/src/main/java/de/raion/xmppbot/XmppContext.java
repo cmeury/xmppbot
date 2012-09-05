@@ -79,7 +79,7 @@ public class XmppContext extends CLIContext implements ScheduleExecutionListener
 	public XmppContext(XmppBot bot) {
 		super(bot);
 		xmppBot = bot;
-		pluginManager = new PluginManager();
+		pluginManager = new PluginManager(this);
 		scheduleExecutor = initScheduler(loadConfig(ScheduleConfig.class));
 	}
 

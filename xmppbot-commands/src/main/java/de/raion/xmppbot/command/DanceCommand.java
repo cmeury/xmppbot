@@ -1,7 +1,7 @@
 package de.raion.xmppbot.command;
 /*
  * #%L
- * XmppBot Core
+ * XmppBot Commands
  * %%
  * Copyright (C) 2012 Bernd Kiefer
  * %%

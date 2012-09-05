@@ -23,10 +23,10 @@ package de.raion.xmppbot.command;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import net.dharwin.common.tools.cli.api.CLIContext;
 import net.dharwin.common.tools.cli.api.Command;
@@ -68,7 +68,7 @@ public class HelpCommand extends AbstractXmppCommand {
 			List<String> knownCommands = new ArrayList<String>(knownCommandsSet);
 			Collections.sort(knownCommands);
 
-			Map<String, String> commandHelpMap = new HashMap<String, String>();
+			Map<String, String> commandHelpMap = new TreeMap<String, String>();
 
 			// Find the longest command name and description.
             // Used in formatting.

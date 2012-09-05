@@ -36,6 +36,7 @@ import com.impetus.annovention.ClasspathDiscoverer;
 import com.impetus.annovention.Discoverer;
 
 import de.raion.xmppbot.XmppBot;
+import de.raion.xmppbot.XmppContext;
 
 /**
  * @author bkiefer
@@ -51,12 +52,14 @@ public class PluginManager {
 
 	private TreeMap<String, Boolean> pluginStatusMap;
 
+	private XmppContext context;
+
 	/**
 	 *
 	 *
 	 */
-	public PluginManager() {
-
+	public PluginManager(XmppContext aContext) {
+		context = aContext;
 		pluginStatusMap = new TreeMap<String, Boolean>();
 		plugins = loadPlugins();
 
@@ -70,6 +73,16 @@ public class PluginManager {
 	public Map<String, AbstractMessageListenerPlugin> getEnabledPlugins() {
 		return getPlugins(Boolean.TRUE);
 	}
+
+	/**
+	 * unmodifiable map of loaded plugins
+	 * @return unmodifiable map of loaded plugins mapped by their annotated name (lowercase)
+	 * @see MessageListenerPlugin#name()
+	 */
+	public Map<String, AbstractMessageListenerPlugin> getPlugins() {
+		return Collections.unmodifiableMap(plugins);
+	}
+
 
 	public Map<String, AbstractMessageListenerPlugin> getDisabledPlugins() {
 		return getPlugins(Boolean.FALSE);
@@ -148,7 +161,7 @@ public class PluginManager {
 					Constructor<AbstractMessageListenerPlugin> constructor = pluginClass
 							.getConstructor(XmppBot.class);
 
-					AbstractMessageListenerPlugin plugin = constructor.newInstance(this);
+					AbstractMessageListenerPlugin plugin = constructor.newInstance(context.getBot());
 
 					aPluginMap.put(pluginAnnotation.name().toLowerCase(), plugin);
 					log.debug("Loaded plugin [" + pluginAnnotation.name() + "].");
@@ -159,7 +172,9 @@ public class PluginManager {
 			} catch (Exception e) {
 				log.error("Error while trying to load class {}, message = {}", pluginClassName,
 						e.getMessage());
+				log.error("loadPlugins(List<String>) - ", e);
 			}
+			
 		}
 		return aPluginMap;
 	}
