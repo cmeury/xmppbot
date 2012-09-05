@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import net.dharwin.common.tools.cli.api.CommandResult;
 import net.dharwin.common.tools.cli.api.annotations.CLICommand;
-import de.raion.xmppbot.context.XmppContext;
+import de.raion.xmppbot.XmppContext;
 
 @CLICommand(name="dance!", description="le me dances!")
 public class DanceCommand extends AbstractXmppCommand {

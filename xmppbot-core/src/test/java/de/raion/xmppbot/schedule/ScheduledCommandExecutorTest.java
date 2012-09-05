@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.raion.xmppbot.context.XmppContext;
+import de.raion.xmppbot.XmppContext;
 
 @SuppressWarnings("javadoc")
 public class ScheduledCommandExecutorTest {

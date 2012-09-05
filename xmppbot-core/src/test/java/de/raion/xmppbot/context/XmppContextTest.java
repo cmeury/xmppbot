@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import de.raion.xmppbot.XmppBot;
+import de.raion.xmppbot.XmppContext;
 import de.raion.xmppbot.config.BotConfiguration;
 
 @SuppressWarnings("javadoc")

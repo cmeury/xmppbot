@@ -23,7 +23,6 @@ import org.jivesoftware.smack.PacketInterceptor;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
 
-import de.raion.xmppbot.context.XmppContext;
 
 
 /**

@@ -37,7 +37,7 @@ import net.dharwin.common.tools.cli.api.utils.CommandUtils;
 
 import com.beust.jcommander.Parameter;
 
-import de.raion.xmppbot.context.XmppContext;
+import de.raion.xmppbot.XmppContext;
 
 /**
  * Prints all known commands. A parameter "c" can be specified to print the

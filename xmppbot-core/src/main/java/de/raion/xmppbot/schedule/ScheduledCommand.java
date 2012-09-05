@@ -32,7 +32,7 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.raion.xmppbot.context.XmppContext;
+import de.raion.xmppbot.XmppContext;
 import de.raion.xmppbot.io.ChatWriter;
 import de.raion.xmppbot.io.MultiUserChatWriter;
 

@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.Parameter;
 
-import de.raion.xmppbot.context.XmppContext;
+import de.raion.xmppbot.XmppContext;
 import de.raion.xmppbot.util.PacketUtils;
 
 /**

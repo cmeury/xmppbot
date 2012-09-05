@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.Parameter;
 
-import de.raion.xmppbot.context.XmppContext;
+import de.raion.xmppbot.XmppContext;
 import de.raion.xmppbot.schedule.ScheduledCommand;
 import de.raion.xmppbot.schedule.ScheduledCommandExecutor;
 import de.raion.xmppbot.schedule.WorkingDayScheduledCommand;

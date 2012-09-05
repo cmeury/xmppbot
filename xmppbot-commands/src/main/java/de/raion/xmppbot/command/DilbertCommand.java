@@ -46,7 +46,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
 
-import de.raion.xmppbot.context.XmppContext;
+import de.raion.xmppbot.XmppContext;
 
 @CLICommand(name="dilbert", description="posts dilbert strips (default: strip of the day)")
 public class DilbertCommand extends AbstractXmppCommand {

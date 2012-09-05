@@ -26,7 +26,7 @@ import com.beust.jcommander.Parameter;
 
 import net.dharwin.common.tools.cli.api.CommandResult;
 import net.dharwin.common.tools.cli.api.annotations.CLICommand;
-import de.raion.xmppbot.context.XmppContext;
+import de.raion.xmppbot.XmppContext;
 
 @CLICommand(name="echo", description="display a line of text")
 public class EchoCommand extends AbstractXmppCommand{

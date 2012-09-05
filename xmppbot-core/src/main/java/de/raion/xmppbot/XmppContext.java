@@ -1,4 +1,4 @@
-package de.raion.xmppbot.context;
+package de.raion.xmppbot;
 /*
  * #%L
  * XmppBot Core
@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import de.raion.xmppbot.XmppBot;
 import de.raion.xmppbot.command.AbstractXmppCommand;
+import de.raion.xmppbot.plugin.PluginManager;
 import de.raion.xmppbot.schedule.ScheduleConfig;
 import de.raion.xmppbot.schedule.ScheduleExecutionListener;
 import de.raion.xmppbot.schedule.ScheduledCommandExecutor;
@@ -65,6 +65,7 @@ public class XmppContext extends CLIContext implements ScheduleExecutionListener
 	@SuppressWarnings("javadoc")
 	protected  ScheduledCommandExecutor scheduleExecutor;
 
+	private PluginManager pluginManager;
 
 
 
@@ -78,6 +79,7 @@ public class XmppContext extends CLIContext implements ScheduleExecutionListener
 	public XmppContext(XmppBot bot) {
 		super(bot);
 		xmppBot = bot;
+		pluginManager = new PluginManager();
 		scheduleExecutor = initScheduler(loadConfig(ScheduleConfig.class));
 	}
 
@@ -269,11 +271,11 @@ public class XmppContext extends CLIContext implements ScheduleExecutionListener
 			return mapper.readValue(new File(aClass.getSimpleName().toLowerCase()+".json"), aClass);
 		} catch (Exception  e) {
 
-			log.error("loadConfig", e);
+			log.error("loadConfig - {}", e.getMessage());
 			try {
 				return aClass.newInstance();
 			} catch (Exception e1) {
-				log.error("loadconfig, e1");
+				log.error("loadconfig - {}", e1.getMessage());
 				return null;
 			}
 		}
@@ -319,16 +321,31 @@ public class XmppContext extends CLIContext implements ScheduleExecutionListener
 
 
 	public void configurationUpdated(ScheduleConfig aConfig) {
-
 		try {
 			saveConfig(aConfig);
 			log.info("configuration of the ScheduledCommandExecutor saved");
 		} catch (IOException e) {
 		    log.error("afterExecute(ScheduledCommand) - saveconfig", e);
 		}
-
 	}
 
+
+
+	/**
+	 * @return pluginmanager
+	 */
+	public PluginManager getPluginManager() {
+		return pluginManager;
+	}
+
+//	/**
+//	 * @return
+//	 */
+//	public <T extends AbstractMessageListenerPlugin> T  getPluginInstance(Class<? extends AbstractMessageListenerPlugin> pluginClass) {
+//		MessageListenerPlugin pluginAnnotation = pluginClass.getAnnotation(MessageListenerPlugin.class);
+//		return (T) xmppBot.pluginMap.get(pluginAnnotation.name().toLowerCase());
+//
+//	}
 
 
 }
