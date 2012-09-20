@@ -20,6 +20,7 @@ package de.raion.xmppbot.plugin;
  */
 
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +49,7 @@ public class PluginManager {
 	private static Logger log = LoggerFactory.getLogger(PluginManager.class);
 
 	/** mapps all running plugins by their annotated name */
+	@SuppressWarnings("rawtypes")
 	protected Map<String, AbstractMessageListenerPlugin> plugins;
 
 	private TreeMap<String, Boolean> pluginStatusMap;
@@ -70,6 +72,7 @@ public class PluginManager {
 	}
 
 
+	@SuppressWarnings("rawtypes")
 	public Map<String, AbstractMessageListenerPlugin> getEnabledPlugins() {
 		return getPlugins(Boolean.TRUE);
 	}
@@ -79,11 +82,13 @@ public class PluginManager {
 	 * @return unmodifiable map of loaded plugins mapped by their annotated name (lowercase)
 	 * @see MessageListenerPlugin#name()
 	 */
+	@SuppressWarnings("rawtypes")
 	public Map<String, AbstractMessageListenerPlugin> getPlugins() {
 		return Collections.unmodifiableMap(plugins);
 	}
 
 
+	@SuppressWarnings("rawtypes")
 	public Map<String, AbstractMessageListenerPlugin> getDisabledPlugins() {
 		return getPlugins(Boolean.FALSE);
 	}
@@ -108,6 +113,42 @@ public class PluginManager {
 		return setPluginState(pluginName, Boolean.FALSE);
 	}
 
+	/**
+	 * unmodifiable map displaying the status of each plugin
+	 * @return 	unmodifiable map mapping {@link MessageListenerPlugin#name()} to the status
+	 * 			(true=enabled/ false=disabled)
+	 *
+	 */
+	public Map<String, Boolean> getStatusMap() {
+		return Collections.unmodifiableMap(pluginStatusMap);
+	
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public Boolean isEnabled(Class<? extends AbstractMessageListenerPlugin> pluginClass) {
+		Collection<AbstractMessageListenerPlugin> plugins = getEnabledPlugins().values();
+		for (AbstractMessageListenerPlugin plugin : plugins) {
+			if(plugin.getClass().equals(pluginClass)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public <T> T get(Class<? extends AbstractMessageListenerPlugin<T>> pluginClass) {
+		Collection<AbstractMessageListenerPlugin> plugins = getEnabledPlugins().values();
+		for (AbstractMessageListenerPlugin<?> plugin : plugins) {
+			if(plugin.getClass().equals(pluginClass)) {
+				return (T) plugin;
+			}
+		}
+		return null;
+	}
+	
+
+
 	private Boolean setPluginState(String key, Boolean state) {
 		if(pluginStatusMap.containsKey(key)) {
 			pluginStatusMap.put(key, state);
@@ -117,6 +158,7 @@ public class PluginManager {
 	}
 
 
+	@SuppressWarnings("rawtypes")
 	private Map<String, AbstractMessageListenerPlugin> getPlugins(Boolean state) {
 
 		Map<String, AbstractMessageListenerPlugin> map = new HashMap<String, AbstractMessageListenerPlugin>();
@@ -128,11 +170,12 @@ public class PluginManager {
 				map.put(key, plugins.get(key));
 			}
 		}
-
 		return map;
 	}
+	
 
 
+	@SuppressWarnings("rawtypes")
 	private Map<String, AbstractMessageListenerPlugin> loadPlugins() {
 		Discoverer discoverer = new ClasspathDiscoverer();
 		CLIAnnotationDiscovereryListener discoveryListener = new CLIAnnotationDiscovereryListener(
@@ -143,6 +186,7 @@ public class PluginManager {
 		return loadPlugins(discoveryListener.getDiscoveredClasses());
 	}
 
+	@SuppressWarnings("rawtypes")
 	private Map<String, AbstractMessageListenerPlugin> loadPlugins(List<String> pluginClasses) {
 
 		Map<String, AbstractMessageListenerPlugin> aPluginMap = new HashMap<String, AbstractMessageListenerPlugin>();
@@ -177,18 +221,6 @@ public class PluginManager {
 			
 		}
 		return aPluginMap;
-	}
-
-
-	/**
-	 * unmodifiable map displaying the status of each plugin
-	 * @return 	unmodifiable map mapping {@link MessageListenerPlugin#name()} to the status
-	 * 			(true=enabled/ false=disabled)
-	 *
-	 */
-	public Map<String, Boolean> getStatusMap() {
-		return Collections.unmodifiableMap(pluginStatusMap);
-
 	}
 
 }

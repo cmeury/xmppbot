@@ -40,7 +40,7 @@ import de.raion.xmppbot.io.MultiUserChatWriter;
  * base class for MessageListenerPlugins. the class provides to correct
  * context for the subclasses.
  */
-public abstract class AbstractMessageListenerPlugin implements PacketListener {
+public abstract class AbstractMessageListenerPlugin<T> implements PacketListener {
 	// static variables
 	/** default logger */
 	private static Logger log = LoggerFactory.getLogger(AbstractMessageListenerPlugin.class);

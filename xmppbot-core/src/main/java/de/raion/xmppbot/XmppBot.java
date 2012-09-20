@@ -316,7 +316,7 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 
 				muc.addMessageListener(hcListener);
 
-				// end TODO remove workareound handly of muclistener
+				// end TODO remove workareound handling of muclistener
 
 				muc.join(xmppConfig.getNickName(), xmppConfig.getPassword(), history,
 						SmackConfiguration.getPacketReplyTimeout());

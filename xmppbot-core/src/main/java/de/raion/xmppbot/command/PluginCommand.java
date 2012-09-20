@@ -65,6 +65,7 @@ public class PluginCommand extends AbstractXmppCommand {
 
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void printPluginList(XmppContext context) {
 
 		Set<Entry<String, AbstractMessageListenerPlugin>> entrySet = context.getPluginManager().getPlugins().entrySet();

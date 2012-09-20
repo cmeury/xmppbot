@@ -38,11 +38,12 @@ import de.raion.xmppbot.XmppContext;
 import de.raion.xmppbot.filter.MessageBodyMatchesFilter;
 
 /**
- *
+ * listen to messages which containing links, grabs title and description from the site and post them
+ * to the Chat / MultiUserChat the message came frome.
  *
  */
 @MessageListenerPlugin(name="httpinfo", description="shows title and description when links are posted (html only)")
-public class HttpInfoPlugin extends AbstractMessageListenerPlugin {
+public class HttpInfoPlugin extends AbstractMessageListenerPlugin<HttpInfoPlugin> {
 
 
 	// static variables
@@ -65,7 +66,6 @@ public class HttpInfoPlugin extends AbstractMessageListenerPlugin {
 	 */
 	public HttpInfoPlugin(XmppBot aXmppBot) {
 		super(aXmppBot);
-		// TODO Auto-generated constructor stub
 	}
 
 
@@ -109,19 +109,11 @@ public class HttpInfoPlugin extends AbstractMessageListenerPlugin {
 				if(meta != null)
 				builder.append(" - ").append(meta);
 
-			
-
-
 			} catch (IOException e) {
 				log.error("processMessage(XmppContext, Message) - {}", e.getMessage());
 			} finally {
 				xmppContext.println(builder.toString());
 			}
-
-
-
 		}
-
 	}
-
 }

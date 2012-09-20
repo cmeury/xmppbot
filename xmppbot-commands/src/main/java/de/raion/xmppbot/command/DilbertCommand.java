@@ -21,9 +21,7 @@ package de.raion.xmppbot.command;
 
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import net.dharwin.common.tools.cli.api.CommandResult;
 import net.dharwin.common.tools.cli.api.annotations.CLICommand;
@@ -82,7 +80,6 @@ public class DilbertCommand extends AbstractXmppCommand {
 
 
 	private String getImageUrl(String url) {
-		
 		try {
 				
 			Client client = new Client();
@@ -100,24 +97,15 @@ public class DilbertCommand extends AbstractXmppCommand {
 			
 			println("couldn't fetch random url, sry!");
 			return null;
-			
-			
 					
 		} catch (IOException e) {
 			log.error("getRandomUrl()", e);
 			println("couldn't fetch random url, sry!");
 			return null;
-			
 		}
 	}
 
-
-	private void postNewestUrl() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
+	
 	private String createRandomUrl() {
 
 		 DateTime minDate = new DateTime(2006, 1, 1, 0, 0 ,0);
@@ -134,12 +122,11 @@ public class DilbertCommand extends AbstractXmppCommand {
 		 StringBuilder builder = new StringBuilder(RANDOM_BASE_URL);
 		 builder.append(formatter.print(randomDate));
 		 return builder.toString();
-		
 	}
 
+	
 	private  int getDaysInMonth(int year, int month)
     {
-      
         Chronology chrono = ISOChronology.getInstance();
         DateTimeField dayField = chrono.dayOfMonth();        
         LocalDate monthDate = new LocalDate(year, month, 1);
@@ -151,5 +138,4 @@ public class DilbertCommand extends AbstractXmppCommand {
 		Random random = new Random(System.currentTimeMillis());
 		return random.nextInt(max - min + 1) + min;
 	}
-
 }

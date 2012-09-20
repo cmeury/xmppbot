@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("javadoc")
 public class ScheduleCommandTest {
 
+	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(ScheduleCommandTest.class);
 
 
