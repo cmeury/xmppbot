@@ -8,9 +8,9 @@ package de.raion.xmppbot.command;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,10 +36,10 @@ import de.raion.xmppbot.plugin.AbstractMessageListenerPlugin;
 import de.raion.xmppbot.plugin.MessageListenerPlugin;
 
 /**
- *
+ * @TODO implement enabling/disabling of plugins
  *
  */
-@CLICommand(name = "plugin", description = "for managing available plugins")
+@CLICommand(name = "plugin", description = "managing available plugins")
 public class PluginCommand extends AbstractXmppCommand {
 
 	/** default logger */
@@ -48,7 +48,7 @@ public class PluginCommand extends AbstractXmppCommand {
 
 	@Parameter(names = { "-l", "-list" }, description = "shows all available plugins")
 	boolean showList = false;
-	
+
 	@Parameter(names = { "-s", "-status" }, description = "shows the status of the plugins (enabled/disabled)")
 	boolean showStatus = false;
 
@@ -58,18 +58,18 @@ public class PluginCommand extends AbstractXmppCommand {
 		if(showList) {
 			printPluginList(context);
 		}
-		if(showStatus)
+		if(showStatus) {
 			printStatusList(context);
+		}
 
 		return CommandResult.OK;
-
 	}
 
 	@SuppressWarnings("rawtypes")
 	private void printPluginList(XmppContext context) {
 
 		Set<Entry<String, AbstractMessageListenerPlugin>> entrySet = context.getPluginManager().getPlugins().entrySet();
-		
+
 		for (Entry<String, AbstractMessageListenerPlugin> entry : entrySet) {
 			MessageListenerPlugin annotation = entry.getValue().getClass().getAnnotation(MessageListenerPlugin.class);
 			println(annotation.name()+" - "+annotation.description());
@@ -85,7 +85,6 @@ public class PluginCommand extends AbstractXmppCommand {
 			println("no plugins available!");
 			return;
 		}
-
 
 		StringBuilder builder = new StringBuilder();
 

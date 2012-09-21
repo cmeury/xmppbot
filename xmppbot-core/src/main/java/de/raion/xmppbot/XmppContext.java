@@ -8,9 +8,9 @@ package de.raion.xmppbot;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -79,14 +79,15 @@ public class XmppContext extends CLIContext implements ScheduleExecutionListener
 	public XmppContext(XmppBot bot) {
 		super(bot);
 		xmppBot = bot;
-		pluginManager = new PluginManager(this);
 		scheduleExecutor = initScheduler(loadConfig(ScheduleConfig.class));
 	}
 
 	/**
-	 * by now it refreshes the Scheduler after the Startup with configured Commands
+	 * initializes the pluginManager and refreshes the Scheduler after the Startup with configured Commands
 	 */
 	public void init() {
+
+		pluginManager = new PluginManager(this);
 
 		final Collection<String> cmdCollection = scheduleExecutor.getConfig().getSchedules().values();
 
@@ -337,6 +338,8 @@ public class XmppContext extends CLIContext implements ScheduleExecutionListener
 	public PluginManager getPluginManager() {
 		return pluginManager;
 	}
+
+
 
 //	/**
 //	 * @return
