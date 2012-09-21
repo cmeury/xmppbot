@@ -9,9 +9,9 @@ package de.raion.xmppbot;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package de.raion.xmppbot;
  */
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,6 +46,9 @@ import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.AndFilter;
+import org.jivesoftware.smack.filter.FromContainsFilter;
+import org.jivesoftware.smack.filter.NotFilter;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
@@ -130,6 +134,14 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 			this.registerChatListener(this, connectionMap);
 
 			getContext().init();
+
+			Collection<XMPPConnection> connections = connectionMap.values();
+
+			for (XMPPConnection connection : connections) {
+				addPlugins(connection);
+			}
+
+
 		}
 		catch(Exception e) {
 			log.error("init(BotConfiguration) - ", e);
@@ -253,8 +265,6 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 				connection.login(jabberId, pwd);
 				log.info("logged in with name '{}'", jabberId);
 
-				connection = addPlugins(connection);
-
 				joinMultiUserChats(xmppConfig, connection);
 				joinChats(xmppConfig, connection);
 
@@ -270,12 +280,38 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 
 	private XMPPConnection addPlugins(XMPPConnection connection) {
 
-		Collection<AbstractMessageListenerPlugin> plugins = getContext().getPluginManager().getEnabledPlugins().values();
+		Collection<AbstractMessageListenerPlugin> plugins = getContext().getPluginManager()
+				                                                        .getEnabledPlugins()
+				                                                        .values();
+
+		// excluding messages from enbot himself :)
+		List<String> nickNameList = getOwnNickNames();
+		List<NotFilter> notFromFilterList = new ArrayList<NotFilter>();
+
+		for (String nickName : nickNameList) {
+			FromContainsFilter fromFilter = new FromContainsFilter(nickName);
+			notFromFilterList.add(new NotFilter(fromFilter));
+		}
 
 		for(AbstractMessageListenerPlugin plugin : plugins){
-			connection.addPacketListener(plugin, plugin.getAcceptFilter());
+
+			NotFilter[] notFilter = new NotFilter[notFromFilterList.size()];
+			AndFilter andFilter = new AndFilter(notFromFilterList.toArray(notFilter));
+			andFilter.addFilter(plugin.getAcceptFilter());
+
+			connection.addPacketListener(plugin, andFilter);
 		}
 		return connection;
+	}
+
+
+	private List<String> getOwnNickNames() {
+		List<String> list = new ArrayList<String>();
+		Collection<XmppConfiguration> c = configuration.getConfigurations().values();
+		for (XmppConfiguration xmppConfiguration : c) {
+			list.add(xmppConfiguration.getNickName());
+		}
+		return list;
 	}
 
 
