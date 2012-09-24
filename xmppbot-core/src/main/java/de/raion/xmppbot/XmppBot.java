@@ -67,6 +67,7 @@ import de.raion.xmppbot.config.XmppConfiguration;
 import de.raion.xmppbot.hipchat.HipChatMultiUserChatListener;
 import de.raion.xmppbot.plugin.AbstractMessageListenerPlugin;
 import de.raion.xmppbot.plugin.MessageListenerPlugin;
+import de.raion.xmppbot.plugin.PluginStatusListener;
 
 /**
  *<h2>Enbot Botson</h2>
@@ -82,7 +83,9 @@ import de.raion.xmppbot.plugin.MessageListenerPlugin;
  */
 @SuppressWarnings("rawtypes")
 @CLIEntry
-public class XmppBot extends CommandLineApplication implements ChatManagerListener, PacketListener {
+public class XmppBot extends CommandLineApplication implements ChatManagerListener,
+                                                               PacketListener,
+                                                               PluginStatusListener {
 
 	private static Logger log = LoggerFactory.getLogger(XmppBot.class);
 
@@ -542,11 +545,19 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 	}
 
 
+	/**
+	 * chat by name
+	 * @param participant
+	 * @return
+	 */
 	public Chat getChat(String participant) {
 		return chatMap.get(participant);
 	}
 
 
+	/**
+	 * @return configuration object of enbot
+	 */
 	public BotConfiguration getConfiguration() {
 		return configuration;
 
@@ -583,6 +594,18 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 
 		bot.init(config);
 		TimeUnit.HOURS.sleep(1);
+
+	}
+
+
+	public <T> void pluginDisabled(String pluginName, AbstractMessageListenerPlugin<T> plugin) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	public <T> void pluginEnabled(String pluginName, AbstractMessageListenerPlugin<T> plugin) {
+		// TODO Auto-generated method stub
 
 	}
 }

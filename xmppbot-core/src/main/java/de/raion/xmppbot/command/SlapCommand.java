@@ -8,9 +8,9 @@ package de.raion.xmppbot.command;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import net.dharwin.common.tools.cli.api.CommandResult;
 import net.dharwin.common.tools.cli.api.annotations.CLICommand;
 
 import org.slf4j.Logger;
@@ -62,17 +61,15 @@ public class SlapCommand extends AbstractXmppCommand {
 	private Random random = new Random(System.currentTimeMillis());
 
 	@Override
-	protected CommandResult innerExecute(XmppContext context) {
+	public void executeCommand(XmppContext context) {
 
 		if (context.getMultiUserChat() == null) {
 			println("who should i slap in a private chat, you? *slap*");
-			return CommandResult.OK;
 		}
 
 		SlapConfig config  = context.loadConfig(SlapConfig.class);
 
 		slapWith = checkSlapWith(slapWith, config, context);
-
 
 		Iterator<String> availableUsers = context.getMultiUserChat().getOccupants();
 
@@ -88,13 +85,10 @@ public class SlapCommand extends AbstractXmppCommand {
 
 			println(builder.toString());
 		}
-
-		return CommandResult.OK;
-
 	}
 
-	private String checkSlapWith(String slap, SlapConfig config,
-			XmppContext context) {
+
+	private String checkSlapWith(String slap, SlapConfig config, XmppContext context) {
 
 		if(slap == null) {
 			return getRandomSlapObject(config);
@@ -104,18 +98,14 @@ public class SlapCommand extends AbstractXmppCommand {
 			try {
 				context.saveConfig(config);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("checkSlapWith(String, SlapConfig, XmppContext");
 			}
-			}
-
+		}
 		return slap;
-
-
 	}
 
-	private List<String> findMatchingNicks(List<String> aNickNameList,
-			Iterator<String> availableUsers) {
+
+	private List<String> findMatchingNicks(List<String> aNickNameList,Iterator<String> availableUsers) {
 		ArrayList<String> list = new ArrayList<String>();
 
 		while (availableUsers.hasNext()) {
@@ -140,9 +130,6 @@ public class SlapCommand extends AbstractXmppCommand {
 	 * @return random String
 	 */
 	protected String getRandomSlapObject(SlapConfig config) {
-
 		return config.getSlapObjects().get(random.nextInt(config.getSlapObjects().size()));
-
 	}
-
 }

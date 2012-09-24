@@ -8,9 +8,9 @@ package de.raion.xmppbot.command;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,6 @@ package de.raion.xmppbot.command;
 import java.io.IOException;
 import java.util.Random;
 
-import net.dharwin.common.tools.cli.api.CommandResult;
 import net.dharwin.common.tools.cli.api.annotations.CLICommand;
 
 import org.joda.time.Chronology;
@@ -52,52 +51,52 @@ public class DilbertCommand extends AbstractXmppCommand {
 	private static final String BASE_URL = "http://www.dilbert.com";
 
 	private static final String RANDOM_BASE_URL = "http://www.dilbert.com/strips/comic/";
-	
+
 	private static Logger log = LoggerFactory.getLogger(DilbertCommand.class);
 
-	
+
 	@Parameter(names = { "-r", "--random" }, description = "posts a random strip")
     private boolean random = false;
-	
-	
-	
-	
+
+
+
+
 	@Override
-	protected CommandResult innerExecute(XmppContext context) {
-		
-		String postUrl = null; 
-		
-		if(random)
+	public void executeCommand(XmppContext context) {
+
+		String postUrl = null;
+
+		if(random) {
 			postUrl = getImageUrl(createRandomUrl());
-		else
+		} else {
 			postUrl = getImageUrl(BASE_URL);
-		
-		if(postUrl != null)
+		}
+
+		if(postUrl != null) {
 			println(postUrl);
-		
-		return CommandResult.OK;
+		}
 	}
 
 
 	private String getImageUrl(String url) {
 		try {
-				
+
 			Client client = new Client();
 			ClientResponse response = client.resource(url).get(ClientResponse.class);
-			
+
 			if(response.getClientResponseStatus() == Status.OK) {
-					
+
 				Document doc = Jsoup.parse(response.getEntityInputStream(), "UTF-8", BASE_URL);
-					
+
 				Element imageDiv = doc.select("div.STR_Image").first();
 				Element imageSrc = imageDiv.select("img[src]").first();
-				
+
 				return imageSrc.absUrl("src");
 			}
-			
+
 			println("couldn't fetch random url, sry!");
 			return null;
-					
+
 		} catch (IOException e) {
 			log.error("getRandomUrl()", e);
 			println("couldn't fetch random url, sry!");
@@ -105,37 +104,37 @@ public class DilbertCommand extends AbstractXmppCommand {
 		}
 	}
 
-	
+
 	private String createRandomUrl() {
 
 		 DateTime minDate = new DateTime(2006, 1, 1, 0, 0 ,0);
 		 DateTime maxDate = new DateTime(System.currentTimeMillis());
-		 
+
 		 int randomYear  = getRandomInRange(minDate.getYear(), maxDate.getYear());
 		 int randomMonth = getRandomInRange(1, 12);
 		 int randomDay   = getRandomInRange(1,getDaysInMonth(randomYear, randomMonth));
-		 
+
 		 DateTime randomDate = new DateTime(randomYear, randomMonth, randomDay, 0, 0, 0);
 		 DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
-		 
-		 
+
+
 		 StringBuilder builder = new StringBuilder(RANDOM_BASE_URL);
 		 builder.append(formatter.print(randomDate));
 		 return builder.toString();
 	}
 
-	
+
 	private  int getDaysInMonth(int year, int month)
     {
         Chronology chrono = ISOChronology.getInstance();
-        DateTimeField dayField = chrono.dayOfMonth();        
+        DateTimeField dayField = chrono.dayOfMonth();
         LocalDate monthDate = new LocalDate(year, month, 1);
         return dayField.getMaximumValue(monthDate);
     }
-	
-	
+
+
 	private int getRandomInRange(int min, int max) {
-		Random random = new Random(System.currentTimeMillis());
-		return random.nextInt(max - min + 1) + min;
+		Random r = new Random(System.currentTimeMillis());
+		return r.nextInt(max - min + 1) + min;
 	}
 }

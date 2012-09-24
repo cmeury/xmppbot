@@ -19,11 +19,11 @@ package de.raion.xmppbot.command;
  * #L%
  */
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.dharwin.common.tools.cli.api.CommandResult;
 import net.dharwin.common.tools.cli.api.annotations.CLICommand;
 
 import org.slf4j.Logger;
@@ -34,6 +34,7 @@ import com.beust.jcommander.Parameter;
 import de.raion.xmppbot.XmppContext;
 import de.raion.xmppbot.plugin.AbstractMessageListenerPlugin;
 import de.raion.xmppbot.plugin.MessageListenerPlugin;
+import de.raion.xmppbot.plugin.PluginManager;
 
 /**
  * @TODO implement enabling/disabling of plugins
@@ -52,8 +53,15 @@ public class PluginCommand extends AbstractXmppCommand {
 	@Parameter(names = { "-s", "-status" }, description = "shows the status of the plugins (enabled/disabled)")
 	boolean showStatus = false;
 
+	@Parameter(names = { "-d", "-disable" }, description = "disables the plugins (-d name ...)")
+	List<String> plugins2Disable;
+
+	@Parameter(names = { "-e", "-enable" }, description = "enables the plugins (-e name1 name2 ...)")
+	List<String> plugins2Enable;
+
+
 	@Override
-	protected CommandResult innerExecute(XmppContext context) {
+	public void executeCommand(XmppContext context) {
 
 		if(showList) {
 			printPluginList(context);
@@ -61,8 +69,39 @@ public class PluginCommand extends AbstractXmppCommand {
 		if(showStatus) {
 			printStatusList(context);
 		}
+		if(plugins2Disable.size() > 0) {
+			disablePlugins(plugins2Disable, context);
+		}
 
-		return CommandResult.OK;
+		if(plugins2Enable.size() > 0) {
+			enablePlugins(plugins2Disable, context);
+		}
+	}
+
+
+	private void enablePlugins(List<String> plugins2Disable2, XmppContext context) {
+		PluginManager pluginManager = context.getPluginManager();
+		for (String pluginName : plugins2Disable2) {
+			Boolean enabled = pluginManager.enablePlugin(pluginName);
+			if(enabled) {
+				println(pluginName+" enabled");
+			} else {
+				println("couldn't enable plugin");
+			}
+		}
+	}
+
+
+	private void disablePlugins(List<String> plugins2Disable2, XmppContext context) {
+		PluginManager pluginManager = context.getPluginManager();
+		for (String pluginName : plugins2Disable2) {
+			Boolean enabled = pluginManager.enablePlugin(pluginName);
+			if(enabled) {
+				println(pluginName+" disabled");
+			} else {
+				println("couldn't disable plugin");
+			}
+		}
 	}
 
 	@SuppressWarnings("rawtypes")

@@ -9,9 +9,9 @@ package de.raion.xmppbot.command;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.dharwin.common.tools.cli.api.CommandResult;
 import net.dharwin.common.tools.cli.api.annotations.CLICommand;
 
 import org.joda.time.LocalTime;
@@ -100,25 +99,17 @@ public class ScheduleCommand extends AbstractXmppCommand {
 	Date creationDate = new Date(System.currentTimeMillis());
 
 
-	@SuppressWarnings("finally")
 	@Override
-	protected CommandResult innerExecute(XmppContext context) {
+	public void executeCommand(XmppContext context) {
 
-		try {
-			if (showSchedules) {
-				printSchedules(context);
-			} else if (idsToRemoveList != null) {
-				removeFromSchedule(context);
-			} else {
-				schedule(context);
-			}
-		} finally {
-			return CommandResult.OK;
+		if (showSchedules) {
+			printSchedules(context);
+		} else if (idsToRemoveList != null) {
+			removeFromSchedule(context);
+		} else {
+			schedule(context);
 		}
 	}
-
-
-
 
 
 	private void removeFromSchedule(XmppContext context) {
@@ -151,7 +142,6 @@ public class ScheduleCommand extends AbstractXmppCommand {
 				println(sid + " is not a valid id");
 			}
 		}
-
 		return list;
 	}
 
@@ -222,16 +212,7 @@ public class ScheduleCommand extends AbstractXmppCommand {
 
 			log.info("removed from schedule configuration = {}", removed);
 		}
-
-
-
-
-
-
 	}
-
-
-
 
 
 	private void scheduleWorkingDay(XmppContext context, ScheduledCommandExecutor scheduleExecutor) {
@@ -254,8 +235,7 @@ public class ScheduleCommand extends AbstractXmppCommand {
 			//TODO print information when task is executed etc
 //					log.info("Command '{}' will be executed in '{} ms'",
 //							command, initialDelay);
-			println("scheduled with id [" + scheduledCommand.getId()
-					+ "]");
+			println("scheduled with id [" + scheduledCommand.getId()+ "]");
 		}
 	}
 
@@ -284,6 +264,7 @@ public class ScheduleCommand extends AbstractXmppCommand {
 			println("invalid value '"+daily+"' for parameter -d -daily");
 		}
 	}
+
 
 	private ScheduledCommand setParameters(XmppContext context,
 			ScheduledCommand command) {
@@ -315,6 +296,7 @@ public class ScheduleCommand extends AbstractXmppCommand {
 		return command;
 	}
 
+
 	private boolean isCommandAvailable(XmppContext context) {
 		if (!context.getBot().hasCommand(command)) {
 			println("can't schedule, command '" + command + "' does not exist");
@@ -322,6 +304,7 @@ public class ScheduleCommand extends AbstractXmppCommand {
 		}
 		return true;
 	}
+
 
 	private boolean scheduleTimeIsAvailable() {
 		if (daily != null) {
@@ -331,13 +314,8 @@ public class ScheduleCommand extends AbstractXmppCommand {
 		} else if (minutes != null) {
 			return true;
 		}
-//			else if (everyOption != null) {
-//			return true;
-//		}
 
 		println("schedule time is missing, try options -d, -w, -m, -e or --help");
-
 		return false;
 	}
-
 }

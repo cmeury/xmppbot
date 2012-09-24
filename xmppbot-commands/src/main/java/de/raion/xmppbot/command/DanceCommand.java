@@ -8,9 +8,9 @@ package de.raion.xmppbot.command;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,14 +22,18 @@ package de.raion.xmppbot.command;
 
 import java.util.concurrent.TimeUnit;
 
-import net.dharwin.common.tools.cli.api.CommandResult;
 import net.dharwin.common.tools.cli.api.annotations.CLICommand;
 import de.raion.xmppbot.XmppContext;
 
+/**
+ *
+ *
+ */
 @CLICommand(name="dance!", description="le me dances!")
 public class DanceCommand extends AbstractXmppCommand {
 
-	protected CommandResult innerExecute(XmppContext context) {
+	@Override
+	public void executeCommand(XmppContext context) {
 
 		try {
 			context.sendMessage("\\o/");
@@ -43,11 +47,8 @@ public class DanceCommand extends AbstractXmppCommand {
 			context.sendMessage("\\o/");
 			TimeUnit.SECONDS.sleep(1L);
 			context.sendMessage("¯\\(°_o)/¯");
-			
+
 		}
 		catch(Exception e) {System.out.println("dudi");}
-		
-		
-		return CommandResult.OK;
 	}
 }

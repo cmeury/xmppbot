@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.dharwin.common.tools.cli.api.CommandResult;
 import net.dharwin.common.tools.cli.api.annotations.CLICommand;
 
 import org.slf4j.Logger;
@@ -31,15 +30,13 @@ public class JiraCommand extends AbstractXmppCommand {
 	Boolean update;
 
 	@Override
-	protected CommandResult innerExecute(XmppContext context) {
+	public void executeCommand(XmppContext context) {
 		if(domain != null) {
 			setDomain(domain, context);
 		}
 		if(update) {
 			updateConfiguration(context);
 		}
-
-		return CommandResult.OK;
 	}
 
 	private void updateConfiguration(XmppContext context) {

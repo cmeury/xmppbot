@@ -30,7 +30,6 @@ import java.util.TreeMap;
 
 import net.dharwin.common.tools.cli.api.CLIContext;
 import net.dharwin.common.tools.cli.api.Command;
-import net.dharwin.common.tools.cli.api.CommandResult;
 import net.dharwin.common.tools.cli.api.annotations.CLICommand;
 import net.dharwin.common.tools.cli.api.console.Console;
 import net.dharwin.common.tools.cli.api.utils.CommandUtils;
@@ -59,8 +58,9 @@ public class HelpCommand extends AbstractXmppCommand {
     @Parameter(names = { "-c", "--command" }, description = "The command name to get specific help for.")
     private String commandName;
 
-    @Override
-	public CommandResult innerExecute(XmppContext context) {
+
+	@Override
+	public void executeCommand(XmppContext context) {
 		if (commandName == null) {
 			// Print command list.
 			Set<String> knownCommandsSet = context.getHostApplication().getCommandNames();
@@ -77,19 +77,19 @@ public class HelpCommand extends AbstractXmppCommand {
 
 			// Create a map of command name to description, while also
             // finding the longest command name/description.
-			for (String commandName : knownCommands) {
-			    if (commandName.length() > longestCommandName) {
-                    longestCommandName = commandName.length();
+			for (String cmdName : knownCommands) {
+			    if (cmdName.length() > longestCommandName) {
+                    longestCommandName = cmdName.length();
                 }
 			    Class<? extends Command<? extends CLIContext>> c =
 			        CommandUtils.getCommandClass(
-			            context, commandName);
+			            context, cmdName);
 
 			    String description = c.getAnnotation(CLICommand.class).description();
 			    if (description.length() > longestDescription) {
 			        longestDescription = description.length();
 			    }
-			    commandHelpMap.put(commandName, description);
+			    commandHelpMap.put(cmdName, description);
 			}
 
 			println("Known commands:");
@@ -113,19 +113,16 @@ public class HelpCommand extends AbstractXmppCommand {
 	                        context, commandName);
 				if (commandClass == null) {
 					Console.error("Command ["+commandName+"] not recognized.");
-					return CommandResult.BAD_ARGS;
 				}
 				command = commandClass.newInstance();
 			}
 			catch (Exception e) {
 				Console.error("Error loading command help for ["+commandName+"].");
-				return CommandResult.ERROR;
 			}
 
 			command.usage();
 		}
 
-		return CommandResult.OK;
 	}
 
     /**
