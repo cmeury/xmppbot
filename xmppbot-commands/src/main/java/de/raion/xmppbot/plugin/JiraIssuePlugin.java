@@ -18,6 +18,11 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.ClientResponse.Status;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.sun.jersey.api.client.filter.LoggingFilter;
 
 import de.raion.xmppbot.XmppBot;
 import de.raion.xmppbot.XmppContext;
@@ -27,6 +32,7 @@ import de.raion.xmppbot.filter.MessageBodyMatchesFilter;
 /**
  * listen for messages with jira related issues and posts summary and links into chat.
  *
+ * @Todo implement authentication for non public jira instances
  */
 @MessageListenerPlugin(name="jira-issues", description="provides summary and link to jira issues when mentioned in chat")
 public class JiraIssuePlugin extends AbstractMessageListenerPlugin<JiraIssuePlugin> {
@@ -41,6 +47,8 @@ public class JiraIssuePlugin extends AbstractMessageListenerPlugin<JiraIssuePlug
 
 	private JiraConfig config;
 
+	private Client client;
+
 
 	/**
 	 * constructor
@@ -50,6 +58,7 @@ public class JiraIssuePlugin extends AbstractMessageListenerPlugin<JiraIssuePlug
 		super(aXmppBot);
 
 		mapper = new ObjectMapper();
+		client = Client.create();
 		acceptFilter = new MessageBodyMatchesFilter(""); // correct initialization init
 		init();
 	}
@@ -93,13 +102,18 @@ public class JiraIssuePlugin extends AbstractMessageListenerPlugin<JiraIssuePlug
 		TreeMap<String, String> map = new TreeMap<String, String>();
 
 		try {
-			JsonNode rootNode = mapper.readValue(projectsUri.toURL(), JsonNode.class);
-			List<String> keyList = rootNode.findValuesAsText("key");
-			List<String> nameList = rootNode.findValuesAsText("name");
+			ClientResponse response = client.resource(projectsUri).get(ClientResponse.class);
 
-			for(int i=0; i<keyList.size(); i++) {
-				map.put(keyList.get(i), nameList.get(i));
+			if(response.getClientResponseStatus() == Status.OK) {
+				JsonNode rootNode = mapper.readValue(response.getEntityInputStream(), JsonNode.class);
+				List<String> keyList = rootNode.findValuesAsText("key");
+				List<String> nameList = rootNode.findValuesAsText("name");
+
+				for(int i=0; i<keyList.size(); i++) {
+					map.put(keyList.get(i), nameList.get(i));
+				}
 			}
+
 		}catch(Exception e) {
 			log.error("getProjects(URI)", e);
 			return map;
@@ -114,20 +128,25 @@ public class JiraIssuePlugin extends AbstractMessageListenerPlugin<JiraIssuePlug
 	 * @return pattern
 	 */
 	public String createMatchingPattern(Set<String> keySet) {
-		StringBuilder builder = new StringBuilder("(");
 
-		Iterator<String> it = keySet.iterator();
+		if(keySet.size() > 0) {
+			StringBuilder builder = new StringBuilder("(");
 
-		while(it.hasNext()) {
-			builder.append(it.next()).append("-\\d+");
-			if(it.hasNext()) {
-				builder.append("|");
+			Iterator<String> it = keySet.iterator();
+
+			while(it.hasNext()) {
+				builder.append(it.next()).append("-\\d+");
+				if(it.hasNext()) {
+					builder.append("|");
+				}
 			}
-		}
-		builder.append(")");
+			builder.append(")");
 
-		Pattern aPattern = Pattern.compile(builder.toString(), Pattern.CASE_INSENSITIVE);
-		return aPattern.pattern();
+			Pattern aPattern = Pattern.compile(builder.toString(), Pattern.CASE_INSENSITIVE);
+			return aPattern.pattern();
+		}
+
+		return "";
 	}
 
 
@@ -142,15 +161,22 @@ public class JiraIssuePlugin extends AbstractMessageListenerPlugin<JiraIssuePlug
 			try {
 
 				URI issueUri = config.getIssueURI(issue);
-				JsonNode issueNode = mapper.readValue(issueUri.toURL(), JsonNode.class);
-				String issueSummary = issueNode.findValue("summary").textValue();
 
-				StringBuilder builder = new StringBuilder();
-				builder.append("[").append(issue).append("] - ");
-				builder.append(issueSummary).append(" : ");
-				builder.append(config.getIssueBrowseURI(issue).toString()).append("\n");
+				ClientResponse response = client.resource(issueUri).get(ClientResponse.class);
 
-				xmppContext.println(builder.toString());
+				if(response.getClientResponseStatus() == Status.OK) {
+					JsonNode issueNode = mapper.readValue(response.getEntityInputStream(), JsonNode.class);
+					String issueSummary = issueNode.findValue("summary").textValue();
+
+					StringBuilder builder = new StringBuilder();
+					builder.append("[").append(issue).append("] - ");
+					builder.append(issueSummary).append(" : ");
+					builder.append(config.getIssueBrowseURI(issue).toString()).append("\n");
+
+					xmppContext.println(builder.toString());
+				}
+
+
 
 			} catch (Exception e) {
 				log.error("processMessage(XmppContext, Message) - {}", e.getMessage());
@@ -162,6 +188,19 @@ public class JiraIssuePlugin extends AbstractMessageListenerPlugin<JiraIssuePlug
 	private void init() {
 
 		config  = getContext().loadConfig(JiraConfig.class);
+
+		String user = config.getAuthenticationUser();
+		String pwd = config.getAuthenticationPassword();
+
+		if(user != null && pwd != null) {
+			HTTPBasicAuthFilter authFilter = new HTTPBasicAuthFilter(user, pwd);
+			client.addFilter(authFilter);
+			log.info("credentials for basic authentication added");
+		}
+
+		if(log.isDebugEnabled()) {
+			client.addFilter(new LoggingFilter());
+		}
 
 		String regex = config.getMatchingPattern();
 

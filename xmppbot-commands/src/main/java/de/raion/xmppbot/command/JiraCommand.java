@@ -1,5 +1,7 @@
 package de.raion.xmppbot.command;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -27,16 +29,45 @@ public class JiraCommand extends AbstractXmppCommand {
 	String domain;
 
 	@Parameter(names = { "-u", "--update" }, description = "updates the configuration")
-	Boolean update;
+	Boolean update = false;
+
+	@Parameter(names = { "-a", "--auth" }, description = "sets the authentication credentials, -a <usr> <pwd>")
+	List<String> authentication;
 
 	@Override
 	public void executeCommand(XmppContext context) {
+		if(authentication != null) {
+			if(authentication.size() != 2) {
+				println("invalid number of parameters for -a --auth, use -a <usr> <pwd> or --auth <usr> <pwd>");
+			} else {
+				setAuthentication(context);
+			}
+		}
 		if(domain != null) {
 			setDomain(domain, context);
 		}
 		if(update) {
 			updateConfiguration(context);
 		}
+
+	}
+
+	private void setAuthentication(XmppContext context) {
+		try {
+			JiraConfig config = context.loadConfig(JiraConfig.class);
+			config.setAuthenticationUser(authentication.get(0));
+			config.setAuthenticationPassword(authentication.get(1));
+			context.saveConfig(config);
+			JiraIssuePlugin plugin = context.getPluginManager().get(JiraIssuePlugin.class);
+			plugin.updateConfiguration();
+
+
+		} catch(IOException e) {
+			log.error("setAuthentication(XmppContext)", e);
+			println("error occured, couldn't set authentication credentials");
+		}
+
+
 	}
 
 	private void updateConfiguration(XmppContext context) {
@@ -75,6 +106,11 @@ public class JiraCommand extends AbstractXmppCommand {
 				plugin.updateConfiguration();
 				Set<Entry<String, String>> set = projectMap.entrySet();
 				StringBuilder builder = new StringBuilder("available projects:\n");
+
+				if(projectMap.size() == 0) {
+					builder.append("none");
+				}
+
 				for (Entry<String, String> entry : set) {
 					builder.append(entry.getKey()).append(" - ").append(entry.getValue()).append("\n");
 				}

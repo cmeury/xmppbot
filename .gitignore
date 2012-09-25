@@ -1,3 +1,7 @@
+#xmppbot
+xmppbot-core/*.json
+
+
 #################
 ## Eclipse
 #################

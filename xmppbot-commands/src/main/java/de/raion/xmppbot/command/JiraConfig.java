@@ -17,6 +17,10 @@ public class JiraConfig {
 
 	private String browsePath = "/browse";
 
+	private String authenticationUser;
+
+	private String authenticationPassword;
+
 	public String getProjectPath() {
 		return projectPath;
 	}
@@ -59,7 +63,12 @@ public class JiraConfig {
 		return new URI("https", jiraDomain, projectPath, null);
 	}
 
-	public void setProjectURI(String dummy) {};
+	/**
+	 * @param dummy does nothing, jackson object mapper needs this method
+	 */
+	public void setProjectURI(String dummy) {
+		/*does nothing, jackson object mapper needs this method*/
+	}
 
 	public void setProjects(Map<String, String> projectMap) {
 		projects = projectMap;
@@ -84,5 +93,21 @@ public class JiraConfig {
 
 	public URI getIssueBrowseURI(String issue) throws URISyntaxException {
 		return new URI("https", jiraDomain, browsePath+"/"+issue, null);
+	}
+
+	public String getAuthenticationUser() {
+		return authenticationUser;
+	}
+
+	public void setAuthenticationUser(String authenticationUser) {
+		this.authenticationUser = authenticationUser;
+	}
+
+	public String getAuthenticationPassword() {
+		return authenticationPassword;
+	}
+
+	public void setAuthenticationPassword(String authenticationPassword) {
+		this.authenticationPassword = authenticationPassword;
 	}
 }

@@ -8,9 +8,9 @@ package de.raion.xmppbot.plugin;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -121,9 +121,9 @@ public class PluginManager {
 	 */
 	public Map<String, Boolean> getStatusMap() {
 		return Collections.unmodifiableMap(pluginStatusMap);
-	
+
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public Boolean isEnabled(Class<? extends AbstractMessageListenerPlugin> pluginClass) {
 		Collection<AbstractMessageListenerPlugin> plugins = getEnabledPlugins().values();
@@ -134,19 +134,24 @@ public class PluginManager {
 		}
 		return false;
 	}
-	
-	
+
+
+	/**
+	 * get plugin by class
+	 * @param pluginClass class of the plugin
+	 * @return plugin
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> T get(Class<? extends AbstractMessageListenerPlugin<T>> pluginClass) {
-		Collection<AbstractMessageListenerPlugin> plugins = getEnabledPlugins().values();
-		for (AbstractMessageListenerPlugin<?> plugin : plugins) {
-			if(plugin.getClass().equals(pluginClass)) {
-				return (T) plugin;
+		Collection<AbstractMessageListenerPlugin> collection = getEnabledPlugins().values();
+		for (AbstractMessageListenerPlugin<?> aPlugin : collection) {
+			if(aPlugin.getClass().equals(pluginClass)) {
+				return (T) aPlugin;
 			}
 		}
 		return null;
 	}
-	
+
 
 
 	private Boolean setPluginState(String key, Boolean state) {
@@ -172,7 +177,7 @@ public class PluginManager {
 		}
 		return map;
 	}
-	
+
 
 
 	@SuppressWarnings("rawtypes")
@@ -218,7 +223,7 @@ public class PluginManager {
 						e.getMessage());
 				log.error("loadPlugins(List<String>) - ", e);
 			}
-			
+
 		}
 		return aPluginMap;
 	}
