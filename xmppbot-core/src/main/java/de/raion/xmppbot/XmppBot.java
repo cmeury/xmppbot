@@ -469,8 +469,8 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 	public void chatCreated(Chat chat, boolean createdLocally) {
 		if (!createdLocally) {
 			chat.addMessageListener(messageHandler);
-			log.info("incoming chat with threadId {}", chat.getThreadID());
-			chatMap.put(chat.getParticipant(), chat);
+			log.info("incoming chat from {} with threadId {}",chat.getParticipant(), chat.getThreadID());
+			chatMap.put(chat.getParticipant().trim(), chat);
 		}
 	}
 

@@ -8,9 +8,9 @@ package de.raion.xmppbot.plugin;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import de.raion.xmppbot.XmppBot;
 import de.raion.xmppbot.XmppContext;
+import de.raion.xmppbot.io.ChatWriter;
 import de.raion.xmppbot.io.MultiUserChatWriter;
 
 /**
@@ -57,11 +58,13 @@ public abstract class AbstractMessageListenerPlugin<T> implements PacketListener
 
 		if (packet instanceof Message) {
 
+			log.debug("packet from '{}'", packet.getFrom());
+
 			final Message message = (Message) packet;
 
 			final XmppBot bot = xmppBot;
 			final MultiUserChat muc = xmppBot.getMultiUserChat(getFromAddress(packet));
-			final Chat chat = xmppBot.getChat(getFromAddress(packet));
+			final Chat chat = xmppBot.getChat(packet.getFrom().trim());
 
 			Runnable runnable = new Runnable() {
 
@@ -71,8 +74,11 @@ public abstract class AbstractMessageListenerPlugin<T> implements PacketListener
 					Thread.currentThread().setName("Message: " + message.getBody());
 
 					PrintWriter threadPrintWriter = null;
-
-					threadPrintWriter = new PrintWriter(new MultiUserChatWriter(muc));
+					if(muc != null) {
+						threadPrintWriter = new PrintWriter(new MultiUserChatWriter(muc));
+					} else {
+						threadPrintWriter = new PrintWriter(new ChatWriter(chat));
+					}
 
 					bot.getContext().setMultiUserChat(muc);
 					bot.getContext().setPrintWriter(threadPrintWriter);
