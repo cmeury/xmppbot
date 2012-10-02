@@ -1,8 +1,9 @@
 Package: enbot-botson
-Version: 4-LATEST
-Section: sindbad
-Priority: hi
+Version: 0.6.0-SNAPSHOT
+Date: 
+Section: net
+Priority: optional
 Architecture: all
-Depends: jdk (>= 1.5)
-Description: Enbot - simple XMPP Bot based on Java, providing commands
-Maintainer: bernd.kiefer@raion.de
+Description: Enbot - simple XMPP Bot based on Java. providing commands and plugins
+Maintainer: Bernd Kiefer <bernd.kiefer@raion.de>
+Homepage: https://github.com/brndkfr/xmppbot

@@ -40,6 +40,7 @@ import de.raion.xmppbot.io.MultiUserChatWriter;
 /**
  * base class for MessageListenerPlugins. the class provides to correct
  * context for the subclasses.
+ * @param <T> type param
  */
 public abstract class AbstractMessageListenerPlugin<T> implements PacketListener {
 	// static variables
@@ -62,13 +63,11 @@ public abstract class AbstractMessageListenerPlugin<T> implements PacketListener
 
 			final Message message = (Message) packet;
 
-			final XmppBot bot = xmppBot;
+			final XmppContext context = xmppBot.getContext();
 			final MultiUserChat muc = xmppBot.getMultiUserChat(getFromAddress(packet));
 			final Chat chat = xmppBot.getChat(packet.getFrom().trim());
 
 			Runnable runnable = new Runnable() {
-
-				@SuppressWarnings("synthetic-access")
 				public void run() {
 
 					Thread.currentThread().setName("Message: " + message.getBody());
@@ -80,20 +79,18 @@ public abstract class AbstractMessageListenerPlugin<T> implements PacketListener
 						threadPrintWriter = new PrintWriter(new ChatWriter(chat));
 					}
 
-					bot.getContext().setMultiUserChat(muc);
-					bot.getContext().setPrintWriter(threadPrintWriter);
-					bot.getContext().setMessage(message);
-
-					log.debug("muc from context" + bot.getContext().getMultiUserChat());
+					context.setMultiUserChat(muc);
+					context.setPrintWriter(threadPrintWriter);
+					context.setMessage(message);
 
 					if (muc != null) {
-						processMessage(bot.getContext(), muc, message);
+						processMessage(context, muc, message);
 					} else {
-						processMessage(bot.getContext(), chat, message);
+						processMessage(context, chat, message);
 					}
 
-					bot.getContext().removeMultiUserChat();
-					bot.getContext().removePrintWriter();
+					context.removeMultiUserChat();
+					context.removePrintWriter();
 				}
 			};
 
@@ -108,10 +105,12 @@ public abstract class AbstractMessageListenerPlugin<T> implements PacketListener
 	 */
 	public XmppContext getContext() { return xmppBot.getContext(); }
 
+
 	/**
 	 * @return the filter which defines what messages the listener consumes
 	 */
 	public abstract PacketFilter getAcceptFilter();
+
 
 	/**
 	 * processes a message
@@ -124,6 +123,7 @@ public abstract class AbstractMessageListenerPlugin<T> implements PacketListener
 	 */
 	public abstract void processMessage(XmppContext xmppContext, Chat chat, Message message);
 
+
 	/**
 	 * processes a message
 	 *
@@ -134,5 +134,4 @@ public abstract class AbstractMessageListenerPlugin<T> implements PacketListener
 	 *            message to process
 	 */
 	public abstract void processMessage(XmppContext xmppContext, MultiUserChat muc, Message message);
-
 }

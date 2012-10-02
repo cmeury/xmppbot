@@ -1,0 +1,20 @@
+{
+  "xmppConnectionDebuggingEnabled" : false,
+  "configurations" : {
+    "hipchat" : {
+      "serviceType" : "HipChat",
+      "host" : "examplehost.org",
+      "port" : 5222,
+      "serviceName" : null,
+      "jabberId" : "YourIDHere@chat.hipchat.com",
+      "password" : "YourPassword",
+      "nickName" : "Enbot Botson",
+      "multiUserChats" : {
+        "example1" : "example1@examplehost.org",
+        "example2" : "example2@examplehost.org",
+      },
+      "chats" : {
+      }
+    }
+  }
+}

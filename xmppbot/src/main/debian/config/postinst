@@ -1,0 +1,6 @@
+#!/bin/sh
+
+USER=enbot
+
+# create the symlinks
+sudo ln -f -s /usr/local/lib/enbot/bin/enbot.sh /usr/bin/enbot

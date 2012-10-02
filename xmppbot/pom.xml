@@ -37,6 +37,12 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/debian</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -69,8 +75,8 @@
 							<goal>jdeb</goal>
 						</goals>
 						<configuration>
-							<deb>${project.build.directory}/${deb.pkgname}_${project.version}-${build.number}_amd64.deb</deb>
-							<controlDir>${basedir}/src/main/debian/config</controlDir>
+							<deb>${project.build.directory}/${deb.pkgname}_${project.version}.deb</deb>
+								<controlDir>${basedir}/src/main/debian/config</controlDir>
 							<installDir>/usr/local/lib/enbot/</installDir>
 							<dataSet>
 								<data>
@@ -89,6 +95,7 @@
 									<src>src/main/debian/etc</src>
 									<type>directory</type>
 									<includes>*.conf</includes>
+									<includes>*.json</includes>
 									<mapper>
 										<type>perm</type>
 										<prefix>/etc/enbot</prefix>
@@ -110,7 +117,7 @@
 									</mapper>
 								</data>
 								<data>
-									<src>${project.build.directory}/${project.artifactId}-${project.version}</src>
+									<src>${project.build.directory}/${project.artifactId}-${project.version}/libs</src>
 									<type>directory</type>
 									<includes>*.jar</includes>
 									<mapper>
