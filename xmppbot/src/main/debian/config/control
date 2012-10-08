@@ -4,6 +4,7 @@ Date:
 Section: net
 Priority: optional
 Architecture: all
+Depends: openjdk-7-jdk
 Description: Enbot - simple XMPP Bot based on Java. providing commands and plugins
 Maintainer: Bernd Kiefer <bernd.kiefer@raion.de>
 Homepage: https://github.com/brndkfr/xmppbot

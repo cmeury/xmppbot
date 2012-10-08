@@ -1,0 +1,27 @@
+#!/bin/sh
+
+LOG_DIR=/var/log/enbot
+USER=enbot
+STANDARD_USER=ubuntu
+
+if [ -z "$(getent passwd $USER)" ]; then
+  echo "creating the enbot group and user"
+  sudo adduser --system --no-create-home --group $USER
+fi
+
+if [ -n "$(getent passwd $STANDARD_USER)"  ]; then
+  echo "adding ubuntu user to enbot (=$USER) group"
+  sudo adduser $STANDARD_USER $USER
+fi
+
+if [ ! -d "$LOG_DIR" ]; then
+  echo "creating log directory '$LOG_DIR'"
+  sudo mkdir -p $LOG_DIR
+fi
+echo "changing ownership of log directory to $USER:$USER"
+sudo chown -R $USER:$USER $LOG_DIR
+
+echo "letting $STANDARD_USER group write to the log file"
+sudo chmod -R g+w $LOG_DIR
+
+
