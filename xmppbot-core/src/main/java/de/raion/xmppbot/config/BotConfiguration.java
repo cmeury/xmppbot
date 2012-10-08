@@ -22,10 +22,6 @@ package de.raion.xmppbot.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.raion.xmppbot.filter.MessageBodyContainsFilter;
-
 /**
  * Configuration for the bot
  *
@@ -82,40 +78,5 @@ public class BotConfiguration {
 	@Override
 	public String toString() {
 		return "BotConfiguration [configurations=" + configurations + "]";
-	}
-
-	public static void main (String[] args) throws Exception {
-
-		/*
-		 * username=14010_120621
-	jabberId=14010_120621@chat.hipchat.com
-	nickname=Enbot Botson
-	server=	conf.hipchat.com
-	Rooms
-
-	HipChat name	XMPP/Jabber name
-	bdev-test	 14010_bdev-test
-		 */
-
-
-		XmppConfiguration config = new XmppConfiguration();
-		config.setServiceType("HipChat");
-		config.setHost("chat.hipchat.com");
-		config.setJabberId("14010_120621@chat.hipchat.com");
-		config.setNickName("Enbot Botson");
-		config.setPassword("iamabot");
-		config.addMultiUserChat("bdev-test", "14010_bdev-test@conf.hipchat.com");
-
-		MessageBodyContainsFilter filter = new MessageBodyContainsFilter("@enbot", true);
-
-		//config.addMultiUserChatFilter(filter);
-
-
-		ObjectMapper mapper = new ObjectMapper();
-
-		BotConfiguration botcfg = new BotConfiguration();
-		botcfg.add("hipchat", config);
-
-		mapper.writerWithDefaultPrettyPrinter().writeValue(System.out, botcfg);
 	}
 }

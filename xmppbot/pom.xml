@@ -94,8 +94,8 @@
 								<data>
 									<src>src/main/debian/etc</src>
 									<type>directory</type>
-									<includes>*.conf</includes>
-									<includes>*.json</includes>
+									<includes>*.conf, *.json</includes>
+									
 									<mapper>
 										<type>perm</type>
 										<prefix>/etc/enbot</prefix>
