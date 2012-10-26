@@ -6,8 +6,15 @@
 	<packaging>pom</packaging>
 	<version>0.6.0-SNAPSHOT</version>
 	<name>Parent Project</name>
+	<description>a xmppbot named Enbot</description>
 	<url>http://raion.de/xmppbot</url>
 	<inceptionYear>2012</inceptionYear>
+	<distributionManagement>
+		<site>
+			<id>raion.de</id>
+			<url>http://raion.de/xmppbot</url>
+		</site>
+	</distributionManagement>
 	<licenses>
 		<license>
 			<name>Apache License 2.0</name>
@@ -26,7 +33,7 @@
 		<system>Github Issue Tracker</system>
 		<url>https://github.com/brndkfr/xmppbot/issues</url>
 	</issueManagement>
-	<description>Master Project</description>
+	
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -37,6 +44,7 @@
 		<maven-javadoc-plugin-version>2.8.1</maven-javadoc-plugin-version>
 		<maven-source-plugin-version>2.2</maven-source-plugin-version>
 		<maven-clean-plugin-vesion>2.5</maven-clean-plugin-vesion>
+		<maven-project-info-reports-plugin-version>2.1.1</maven-project-info-reports-plugin-version>
 
 		<!-- dependency versions -->
 		<cli-api-version>1.0</cli-api-version>
@@ -155,4 +163,25 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	<reporting>
+		<plugins>
+      		<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-project-info-reports-plugin</artifactId>
+		        <version>${maven-project-info-reports-plugin-version}</version>
+				<reportSets>
+				  <reportSet>
+					<reports>
+						  <report>scm</report>
+						  <report>issue-tracking</report>
+						  <report>license</report>
+						  <report>summary</report>
+						  <report>index</report>
+						 
+					</reports>
+				  </reportSet>
+				</reportSets>
+			</plugin>
+    	</plugins>
+	</reporting>
 </project>

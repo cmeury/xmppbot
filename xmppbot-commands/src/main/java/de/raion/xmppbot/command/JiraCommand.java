@@ -76,7 +76,7 @@ public class JiraCommand extends AbstractXmppCommand {
 			JiraIssuePlugin plugin = context.getPluginManager().get(JiraIssuePlugin.class);
 
 			Map<String, String> oldProjects = config.getProjects();
-			Map newProjects = plugin.getProjects(config.getProjectURI());
+			Map<String, String> newProjects = plugin.getProjects(config.getProjectURI());
 
 
 

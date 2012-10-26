@@ -24,6 +24,10 @@ import java.util.regex.PatternSyntaxException;
 
 import org.jivesoftware.smack.packet.Message;
 
+/**
+ * filter which uses a regular expression for matching 
+ *
+ */
 public class MessageBodyMatchesFilter extends AbstractMessageFilter {
 
 	private Pattern pattern;

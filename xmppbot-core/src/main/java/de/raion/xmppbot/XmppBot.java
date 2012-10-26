@@ -21,6 +21,7 @@ package de.raion.xmppbot;
  */
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,7 +65,6 @@ import de.raion.xmppbot.annotation.PacketInterceptor;
 import de.raion.xmppbot.command.AbstractXmppCommand;
 import de.raion.xmppbot.config.BotConfiguration;
 import de.raion.xmppbot.config.XmppConfiguration;
-import de.raion.xmppbot.hipchat.HipChatMultiUserChatListener;
 import de.raion.xmppbot.plugin.AbstractMessageListenerPlugin;
 import de.raion.xmppbot.plugin.MessageListenerPlugin;
 import de.raion.xmppbot.plugin.PluginStatusListener;
@@ -286,7 +286,6 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 		Collection<AbstractMessageListenerPlugin> plugins = getContext().getPluginManager()
 				                                                        .getEnabledPlugins()
 				                                                        .values();
-
 		// excluding messages from enbot himself :)
 		List<String> nickNameList = getOwnNickNames();
 		List<NotFilter> notFromFilterList = new ArrayList<NotFilter>();
@@ -340,14 +339,10 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 
 				if(multiUserChatListenerMap.containsKey(xmppConfig.getServiceType())) {
 					Class<MultiUserChatListener> mucListenerClass = multiUserChatListenerMap.get(xmppConfig.getServiceType());
+					Constructor<MultiUserChatListener> constructor = mucListenerClass.getConstructor(XmppBot.class);
+					AbstractMultiUserChatListener mucListener = (AbstractMultiUserChatListener)constructor.newInstance(this);
+					muc.addMessageListener(mucListener);
 				}
-
-				// TODO better solution for acceptfilter
-				HipChatMultiUserChatListener hcListener = new HipChatMultiUserChatListener(this);
-
-				muc.addMessageListener(hcListener);
-
-				// end TODO remove workareound handling of muclistener
 
 				muc.join(xmppConfig.getNickName(), xmppConfig.getPassword(), history,
 						SmackConfiguration.getPacketReplyTimeout());
