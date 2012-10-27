@@ -1,4 +1,4 @@
-package de.raion.xmppbot.command.core;
+package de.raion.xmppbot.command;
 
 /*
  * #%L
