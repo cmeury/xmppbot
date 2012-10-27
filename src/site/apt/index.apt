@@ -1,1 +1,12 @@
-Hi
+	-----
+	Enbot Botson - a simple xmppbot
+	-----
+	-----
+	
+	Based on
+	
+	*	{{{http://www.igniterealtime.org/projects/smack/index.jsp}Smack API}} - XMPP client library
+	
+	*	{{{http://code.google.com/p/java-cli-api/}java-cli-api}} - an API for creating Java command line interfaces
+	
+		* uses {{{http://jcommander.org/}JCommander}}

@@ -5,7 +5,7 @@
 	<artifactId>xmppbot-parent</artifactId>
 	<packaging>pom</packaging>
 	<version>0.6.0-SNAPSHOT</version>
-	<name>Parent Project</name>
+	<name>Enbot Botson</name>
 	<description>a xmppbot named Enbot</description>
 	<url>http://raion.de/xmppbot</url>
 	<inceptionYear>2012</inceptionYear>
@@ -38,6 +38,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<build.number>local</build.number>
+		<maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+        <buildNumber>${maven.build.timestamp}</buildNumber>
+        <build-date>${maven.build.timestamp}</build-date>
 
 		<!-- plugin version -->
 		<license-maven-plugin-version>1.2</license-maven-plugin-version>
@@ -124,8 +127,17 @@
 					<version>${maven-javadoc-plugin-version}</version>
 					<configuration>
 						<aggregate>true</aggregate>
-
+						<nohelp>false</nohelp>
 					</configuration>
+					<executions>
+						<execution>
+							<id>generated-javadoc</id>
+							<phase>site</phase>
+							<goals>
+								<goal>aggregate</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
@@ -177,7 +189,6 @@
 						  <report>license</report>
 						  <report>summary</report>
 						  <report>index</report>
-						 
 					</reports>
 				  </reportSet>
 				</reportSets>
