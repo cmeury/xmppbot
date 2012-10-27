@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import net.dharwin.common.tools.cli.api.annotations.CLICommand;
 import de.raion.xmppbot.XmppContext;
+import de.raion.xmppbot.command.core.AbstractXmppCommand;
 
 /**
  *

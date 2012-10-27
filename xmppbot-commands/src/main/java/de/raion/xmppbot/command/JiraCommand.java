@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.beust.jcommander.Parameter;
 
 import de.raion.xmppbot.XmppContext;
+import de.raion.xmppbot.command.core.AbstractXmppCommand;
 import de.raion.xmppbot.plugin.JiraIssuePlugin;
 
 /**
