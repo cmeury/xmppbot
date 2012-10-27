@@ -43,14 +43,12 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.AndFilter;
 import org.jivesoftware.smack.filter.FromContainsFilter;
 import org.jivesoftware.smack.filter.NotFilter;
-import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.slf4j.Logger;
@@ -62,7 +60,7 @@ import com.impetus.annovention.Discoverer;
 
 import de.raion.xmppbot.annotation.MultiUserChatListener;
 import de.raion.xmppbot.annotation.PacketInterceptor;
-import de.raion.xmppbot.command.AbstractXmppCommand;
+import de.raion.xmppbot.command.core.AbstractXmppCommand;
 import de.raion.xmppbot.config.BotConfiguration;
 import de.raion.xmppbot.config.XmppConfiguration;
 import de.raion.xmppbot.plugin.AbstractMessageListenerPlugin;
@@ -78,14 +76,10 @@ import de.raion.xmppbot.plugin.PluginStatusListener;
  *@see CLICommand marker annotation for commands
  *@see AbstractMessageListenerPlugin for plugins
  *@see MessageListenerPlugin marker annotation for plugins
- *
- *
  */
 @SuppressWarnings("rawtypes")
 @CLIEntry
-public class XmppBot extends CommandLineApplication implements ChatManagerListener,
-                                                               PacketListener,
-                                                               PluginStatusListener {
+public class XmppBot extends CommandLineApplication implements ChatManagerListener, PluginStatusListener {
 
 	private static Logger log = LoggerFactory.getLogger(XmppBot.class);
 
@@ -125,7 +119,6 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 	@SuppressWarnings("unchecked")
 	public void init(BotConfiguration aConfig)  {
 		try {
-
 			configuration = aConfig;
 
 			super._commands = loadCommands();
@@ -143,8 +136,6 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 			for (XMPPConnection connection : connections) {
 				addPlugins(connection);
 			}
-
-
 		}
 		catch(Exception e) {
 			log.error("init(BotConfiguration) - ", e);
@@ -152,7 +143,97 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 	}
 
 
+	/**
+	 * @return context with thread-specific settings
+	 */
+	public XmppContext getContext() {
+		return (XmppContext) _appContext;
+	}
 
+
+	/** implementation of the ChatManagerListener interface.<br>
+	 *  method is called when a new chat request is incoming
+	 *  @param chat the incoming chat
+	 *  @param createdLocally true if local created, otherwise false
+	 * @see org.jivesoftware.smack.ChatManagerListener#chatCreated(org.jivesoftware.smack.Chat, boolean)
+	 */
+	public void chatCreated(Chat chat, boolean createdLocally) {
+		if (!createdLocally) {
+			chat.addMessageListener(messageHandler);
+			log.info("incoming chat from {} with threadId {}",chat.getParticipant(), chat.getThreadID());
+			chatMap.put(chat.getParticipant().trim(), chat);
+		}
+	}
+
+
+	/**
+	 * processes a incoming command
+	 * @param cmdString the command as string
+	 */
+	public void processCommand(String cmdString) {
+		log.debug("Thread = " + Thread.currentThread().getName());
+		super.processInputLine(cmdString);
+	}
+
+
+	/**
+	 * get multiuserchat by name
+	 * @param mucName name of the multiuserchat
+	 * @return multiuserchat or null if not available
+	 */
+	public MultiUserChat getMultiUserChat(String mucName) {
+		return this.multiUserChatMap.get(mucName);
+	}
+
+
+	/**
+	 * marks aUser for the MultiUserChat muc as available
+	 * @param muc MultiUserChat
+	 * @param aUser the user
+	 */
+	public void userAvailable(MultiUserChat muc, String aUser) {
+	
+		if (this.multiUserChatPresenceMap.containsKey(muc)) {
+			this.multiUserChatPresenceMap.get(muc).add(aUser);
+		} else {
+			HashSet<String> userSet = new HashSet<String>();
+			userSet.add(aUser);
+			this.multiUserChatPresenceMap.put(muc, userSet);
+		}
+	}
+
+
+	/**
+	 * removes aUser from the {@link #multiUserChatPresenceMap} mapped by muc
+	 * @param muc MultiUserChat as key
+	 * @param aUser the user to mark as unavailable
+	 */
+	public void userUnavailabe(MultiUserChat muc, String aUser) {
+	
+		if (this.multiUserChatPresenceMap.containsKey(muc)) {
+			this.multiUserChatPresenceMap.get(muc).remove(aUser);
+		}
+	}
+
+
+	/**
+	 * the available user for a certain multiuserchat
+	 * @param muc multiuserchat
+	 * @return available user names
+	 */
+	public Set<String> getAvailableUser(MultiUserChat muc) {
+		return multiUserChatPresenceMap.get(muc);
+	}
+
+	
+	/**
+	 * chat by name
+	 * @param participant user name
+	 * @return the chat or null if not available
+	 */
+	public Chat getChat(String participant) {
+		return chatMap.get(participant);
+	}
 
 
 	/**
@@ -443,7 +524,7 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 
 
 	/**
-	 * <b>does nothing!</b>
+	 * <b>does nothing! disables shutdown</b>
 	 * @see net.dharwin.common.tools.cli.api.CommandLineApplication#shutdown()
 	 */
 	@Override
@@ -451,96 +532,6 @@ public class XmppBot extends CommandLineApplication implements ChatManagerListen
 
 	@Override
 	protected CLIContext createContext() { return new XmppContext(this); }
-
-
-	/**
-	 * @return context with thread-specific settings
-	 */
-	public XmppContext getContext() {
-		return (XmppContext) _appContext;
-	}
-
-
-	public void chatCreated(Chat chat, boolean createdLocally) {
-		if (!createdLocally) {
-			chat.addMessageListener(messageHandler);
-			log.info("incoming chat from {} with threadId {}",chat.getParticipant(), chat.getThreadID());
-			chatMap.put(chat.getParticipant().trim(), chat);
-		}
-	}
-
-
-	/**
-	 * processes a incoming command
-	 * @param cmdString the command as string
-	 */
-	public void processCommand(String cmdString) {
-		log.debug("Thread = " + Thread.currentThread().getName());
-		super.processInputLine(cmdString);
-	}
-
-
-	/**
-	 * get multiuserchat by name
-	 * @param mucName name of the multiuserchat
-	 * @return multiuserchat or null if not available
-	 */
-	public MultiUserChat getMultiUserChat(String mucName) {
-		return this.multiUserChatMap.get(mucName);
-	}
-
-
-	/**
-	 * marks aUser for the MultiUserChat muc as available
-	 * @param muc MultiUserChat
-	 * @param aUser the user
-	 */
-	public void userAvailable(MultiUserChat muc, String aUser) {
-
-		if (this.multiUserChatPresenceMap.containsKey(muc)) {
-			this.multiUserChatPresenceMap.get(muc).add(aUser);
-		} else {
-			HashSet<String> userSet = new HashSet<String>();
-			userSet.add(aUser);
-			this.multiUserChatPresenceMap.put(muc, userSet);
-		}
-	}
-
-
-	/**
-	 * removes aUser from the {@link #multiUserChatPresenceMap} mapped by muc
-	 * @param muc MultiUserChat as key
-	 * @param aUser the user to mark as unavailable
-	 */
-	public void userUnavailabe(MultiUserChat muc, String aUser) {
-
-		if (this.multiUserChatPresenceMap.containsKey(muc)) {
-			this.multiUserChatPresenceMap.get(muc).remove(aUser);
-		}
-	}
-
-	/**
-	 * the available user for a certain multiuserchat
-	 * @param muc multiuserchat
-	 * @return available user names
-	 */
-	public Set<String> getAvailableUser(MultiUserChat muc) {
-		return multiUserChatPresenceMap.get(muc);
-	}
-
-	public void processPacket(Packet packet) {
-		log.debug(packet.toXML());
-	}
-
-
-	/**
-	 * chat by name
-	 * @param participant user name
-	 * @return the chat or null if not available
-	 */
-	public Chat getChat(String participant) {
-		return chatMap.get(participant);
-	}
 
 
 	/**

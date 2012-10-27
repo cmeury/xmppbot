@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import de.raion.xmppbot.command.AbstractXmppCommand;
+import de.raion.xmppbot.command.core.AbstractXmppCommand;
 import de.raion.xmppbot.plugin.PluginManager;
 import de.raion.xmppbot.schedule.ScheduleConfig;
 import de.raion.xmppbot.schedule.ScheduleExecutionListener;
