@@ -1,4 +1,4 @@
-package de.raion.xmppbot.command;
+package de.raion.xmppbot.command.core;
 /*
  * #%L
  * XmppBot Core
@@ -27,6 +27,8 @@ import static org.junit.Assert.assertNull;
 import java.util.SimpleTimeZone;
 
 import org.junit.Test;
+
+import de.raion.xmppbot.command.core.ToDateCommand;
 
 @SuppressWarnings("javadoc")
 public class ToDateCommandTest {

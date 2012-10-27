@@ -1,4 +1,4 @@
-package de.raion.xmppbot.command;
+package de.raion.xmppbot.command.core;
 /*
  * #%L
  * XmppBot Core
@@ -28,6 +28,8 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
 
 import com.beust.jcommander.ParameterException;
+
+import de.raion.xmppbot.command.core.ISODateTimeConverter;
 
 @SuppressWarnings("javadoc")
 public class ISODateTimeConverterTest {

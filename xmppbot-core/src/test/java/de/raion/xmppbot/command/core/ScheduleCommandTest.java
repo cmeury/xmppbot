@@ -1,4 +1,4 @@
-package de.raion.xmppbot.command;
+package de.raion.xmppbot.command.core;
 /*
  * #%L
  * XmppBot Core
@@ -28,6 +28,8 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.raion.xmppbot.command.core.ScheduleCommand;
 
 @SuppressWarnings("javadoc")
 public class ScheduleCommandTest {
