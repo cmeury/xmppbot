@@ -32,7 +32,7 @@ import de.raion.xmppbot.XmppContext;
  * echoes text
  *
  */
-@CLICommand(name="echo", description="display a line of text")
+@CLICommand(name="echo", description="echo a line of text")
 public class EchoCommand extends AbstractXmppCommand{
 
 	@Parameter(description = "line of text")

@@ -27,8 +27,8 @@ import java.lang.annotation.Target;
 
 /**
  * @author bkiefer
- * defines that the class is implementing an PacketInterceptor for a specific Service
- *
+ * defines that the class is implementing an PacketInterceptor for a specific Service.<br>
+ * classes with this annotation will be loaded on startup and registered to the service specific multiuserchats/channels
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

@@ -184,11 +184,12 @@
 				<reportSets>
 				  <reportSet>
 					<reports>
+					 	  <report>index</report>
+					 	  <report>summary</report>
+					 	  <report>license</report>
 						  <report>scm</report>
+						  <report>dependencies</report>
 						  <report>issue-tracking</report>
-						  <report>license</report>
-						  <report>summary</report>
-						  <report>index</report>
 					</reports>
 				  </reportSet>
 				</reportSets>

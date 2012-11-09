@@ -48,9 +48,9 @@ import de.raion.xmppbot.XmppContext;
  *   -c, --command   The command name to get specific help for.
  * }
  * </pre>
- *
- * @author Sean
- *
+ * 
+ * modification of: net.dharwin.common.tools.cli.api.defaultcommands.HelpCommand
+ * @see net.dharwin.common.tools.cli.api.defaultcommands.HelpCommand
  */
 @CLICommand(name = "help", description = "Prints known commands and usage.")
 public class HelpCommand extends AbstractXmppCommand {
@@ -81,9 +81,7 @@ public class HelpCommand extends AbstractXmppCommand {
 			    if (cmdName.length() > longestCommandName) {
                     longestCommandName = cmdName.length();
                 }
-			    Class<? extends Command<? extends CLIContext>> c =
-			        CommandUtils.getCommandClass(
-			            context, cmdName);
+			    Class<? extends Command<? extends CLIContext>> c = CommandUtils.getCommandClass(context, cmdName);
 
 			    String description = c.getAnnotation(CLICommand.class).description();
 			    if (description.length() > longestDescription) {
@@ -98,19 +96,15 @@ public class HelpCommand extends AbstractXmppCommand {
 			    if (desc == null) {
 			        desc = "";
 			    }
-			   println(String.format(getOutputString(command,
-			                desc, longestCommandName,
-			                longestDescription),
-			            command, desc));
+			   println(String.format(getOutputString(command, desc, longestCommandName, longestDescription),
+			                                         command, desc));
 			}
 		}
 		else {
 			// Print help for a specific command.
 			Command<? extends CLIContext> command = null;
 			try {
-				Class<? extends Command<? extends CLIContext>> commandClass =
-				    CommandUtils.getCommandClass(
-	                        context, commandName);
+				Class<? extends Command<? extends CLIContext>> commandClass =  CommandUtils.getCommandClass(context, commandName);
 				if (commandClass == null) {
 					Console.error("Command ["+commandName+"] not recognized.");
 				}
@@ -119,12 +113,11 @@ public class HelpCommand extends AbstractXmppCommand {
 			catch (Exception e) {
 				Console.error("Error loading command help for ["+commandName+"].");
 			}
-
 			command.usage();
 		}
-
 	}
 
+	
     /**
      * Get a format string for a help line.
      * This creates a string formattable to two columns, where the column
@@ -139,8 +132,12 @@ public class HelpCommand extends AbstractXmppCommand {
      */
     private String getOutputString(String commandName, String description,
             int nameColWidth, int descColWidth) {
-        return new StringBuilder().append("%1$-").append(nameColWidth)
-                .append("s\t:\t%2$-").append(descColWidth).append("s").toString();
+        return new StringBuilder().append("%1$-").
+        		                   append(nameColWidth).
+        		                   append("s\t:\t%2$-").
+        		                   append(descColWidth).
+        		                   append("s").
+        		                   toString();
     }
 
 }

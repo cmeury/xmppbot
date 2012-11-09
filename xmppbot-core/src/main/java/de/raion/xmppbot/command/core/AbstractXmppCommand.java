@@ -66,11 +66,9 @@ public abstract class AbstractXmppCommand extends Command<XmppContext> {
 	}
 
 
-
-
-
 	/**
-	 * @param context
+	 * will be called for command execution with given context
+	 * @param context the command should use during execution
 	 */
 	public abstract void executeCommand(XmppContext context);
 
@@ -101,7 +99,6 @@ public abstract class AbstractXmppCommand extends Command<XmppContext> {
 	public void println(String aString) {
 		if(printStreamThreadLocal.get() != null) {
 			printStreamThreadLocal.get().println(aString);
-
 		}
 	}
 
@@ -113,10 +110,10 @@ public abstract class AbstractXmppCommand extends Command<XmppContext> {
 	public void print(String aString) {
 		if(printStreamThreadLocal.get() != null) {
 			printStreamThreadLocal.get().print(aString);
-
 		}
 	}
 
+	
 	/**
 	 * sets the thread specific printwriter to use
 	 * @param aPrintWriter the printwriter to use
