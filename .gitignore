@@ -9,7 +9,6 @@ xmppbot-core/*.json
 *.pydevproject
 .project
 .metadata
-bin/
 tmp/
 *.tmp
 *.bak
